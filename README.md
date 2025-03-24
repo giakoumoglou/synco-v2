@@ -61,7 +61,7 @@ The scripts expect the following dataset structures:
 
 ### Unsupervised Training
 
-To do unsupervised pre-training with **MoBy** framework using **DeiT-Small** backbone on ImageNet on a 4-gpu machine, run:
+To do unsupervised pre-training with **MoBY** framework using **DeiT-Small** backbone on ImageNet on a 4-gpu machine, run:
 
 ```
 python -m torch.distributed.launch \
@@ -75,7 +75,7 @@ python -m torch.distributed.launch \
     --tag [tag folder] \
 ```
 
-Similarly for SynCo and BYOL.
+Similarly for **SynCo** or **BYOL**.
 
 ### Linear Classification
 
