@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -lselect=1:ncpus=16:mem=64gb:ngpus=4
+#PBS -lwalltime=72:00:00
+
+cd $PBS_O_WORKDIR
+
+MASTER_PORT=$((10000 + RANDOM % 50000))
+DATA_PATH="$HOME/datasets/imagenet/"
+OUTPUT_DIR="$EPHEMERAL/trash/output/"
+TAG="byol__swin_small__300ep__imagenet1k"
+
+source $HOME/anaconda3/bin/activate
+source activate transformer-ssl
+
+python -m torch.distributed.launch \
+    --nproc_per_node=4 \
+    --master_port=$MASTER_PORT \
+    main_pretrain.py \
+    --cfg configs/byol_swin_small.yaml \
+    --data-path $DATA_PATH \
+    --batch-size 128 \
+    --gradient-accumulation-steps 8 \
+    --output $OUTPUT_DIR \
+    --tag $TAG \
+
+python -m torch.distributed.launch \
+    --nproc_per_node=4 \
+    --master_port=$MASTER_PORT \
+    main_linear.py \
+    --cfg configs/byol_swin_small.yaml \
+    --data-path $DATA_PATH \
+    --output $OUTPUT_DIR \
+    --tag $TAG \
