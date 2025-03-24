@@ -23,8 +23,6 @@ It also contains the implementation of:
 }
 ```
 
-and
-
 ```
 @misc{xie2021moby,
       title={Self-Supervised Learning with Swin Transformers}, 
