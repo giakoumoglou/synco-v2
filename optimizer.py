@@ -11,7 +11,7 @@ from torch import optim as optim
 from termcolor import colored
 
 
-def build_optimizer(config, model, logger):
+def build_optimizer(config, model):
     """
     Build optimizer, set weight decay of normalization to 0 by default
     """

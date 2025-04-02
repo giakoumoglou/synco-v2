@@ -12,7 +12,7 @@ from timm.scheduler.step_lr import StepLRScheduler
 from timm.scheduler.scheduler import Scheduler
 
 
-def build_scheduler(config, optimizer, n_iter_per_epoch, logger):
+def build_scheduler(config, optimizer, n_iter_per_epoch):
     num_steps = int(config.TRAIN.EPOCHS * n_iter_per_epoch)
     warmup_steps = int(config.TRAIN.WARMUP_EPOCHS * n_iter_per_epoch)
     decay_steps = int(config.TRAIN.LR_SCHEDULER.DECAY_EPOCHS * n_iter_per_epoch) if hasattr(config.TRAIN.LR_SCHEDULER, 'DECAY_EPOCHS') else 0
