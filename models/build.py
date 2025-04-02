@@ -56,9 +56,6 @@ models = dict(
     resnet101=resnet101,
     resnet152=resnet152,
     resnet200=resnet200,
-    # TODO: rev-vit
-    # TODO: rev-swin
-    # TODO: rev-mvit
 )
 
 
@@ -124,6 +121,7 @@ def build_model(config):
             proj_num_layers=config.MODEL.SSL.PROJ_NUM_LAYERS,
             pred_num_layers=config.MODEL.SSL.PRED_NUM_LAYERS,
         )
+    # ================ synco ================
     elif model_type == 'synco':
         print(colored(f"Building SyncO with {encoder_type} encoder:", "blue"))
         if encoder_type.startswith('resnet'):
