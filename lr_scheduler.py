@@ -13,14 +13,12 @@ from timm.scheduler.scheduler import Scheduler
 
 
 def build_scheduler(config, optimizer, n_iter_per_epoch):
+    """
+    Build learning rate scheduler
+    """
     num_steps = int(config.TRAIN.EPOCHS * n_iter_per_epoch)
     warmup_steps = int(config.TRAIN.WARMUP_EPOCHS * n_iter_per_epoch)
     decay_steps = int(config.TRAIN.LR_SCHEDULER.DECAY_EPOCHS * n_iter_per_epoch) if hasattr(config.TRAIN.LR_SCHEDULER, 'DECAY_EPOCHS') else 0
-
-    print(f"Building learning rate scheduler: {config.TRAIN.LR_SCHEDULER.NAME}")
-    print(f"Total training steps: {num_steps}")
-    print(f"Warmup steps: {warmup_steps} ({config.TRAIN.WARMUP_EPOCHS} epochs)")
-    
     lr_scheduler = None
     if config.TRAIN.LR_SCHEDULER.NAME == 'cosine':
         lr_scheduler = CosineLRScheduler(
@@ -33,8 +31,6 @@ def build_scheduler(config, optimizer, n_iter_per_epoch):
             cycle_limit=1,
             t_in_epochs=False,
         )
-        print(f"Cosine LR scheduler: initial_lr={config.TRAIN.BASE_LR}, "
-                   f"min_lr={config.TRAIN.MIN_LR}, warmup_lr={config.TRAIN.WARMUP_LR}")
     elif config.TRAIN.LR_SCHEDULER.NAME == 'linear':
         lr_scheduler = LinearLRScheduler(
             optimizer,
@@ -44,8 +40,6 @@ def build_scheduler(config, optimizer, n_iter_per_epoch):
             warmup_t=warmup_steps,
             t_in_epochs=False,
         )
-        print(f"Linear LR scheduler: initial_lr={config.TRAIN.BASE_LR}, "
-                   f"min_rate=0.01, warmup_lr={config.TRAIN.WARMUP_LR}")
     elif config.TRAIN.LR_SCHEDULER.NAME == 'step':
         lr_scheduler = StepLRScheduler(
             optimizer,
@@ -55,11 +49,6 @@ def build_scheduler(config, optimizer, n_iter_per_epoch):
             warmup_t=warmup_steps,
             t_in_epochs=False,
         )
-        print(f"Step LR scheduler: initial_lr={config.TRAIN.BASE_LR}, "
-                   f"decay_steps={decay_steps} ({config.TRAIN.LR_SCHEDULER.DECAY_EPOCHS} epochs), "
-                   f"decay_rate={config.TRAIN.LR_SCHEDULER.DECAY_RATE}, "
-                   f"warmup_lr={config.TRAIN.WARMUP_LR}")
-
     return lr_scheduler
 
 
@@ -78,10 +67,14 @@ class LinearLRScheduler(Scheduler):
                  initialize=True,
                  ) -> None:
         super().__init__(
-            optimizer, param_group_field="lr",
-            noise_range_t=noise_range_t, noise_pct=noise_pct, noise_std=noise_std, noise_seed=noise_seed,
-            initialize=initialize)
-
+            optimizer, 
+            param_group_field="lr",
+            noise_range_t=noise_range_t, 
+            noise_pct=noise_pct, 
+            noise_std=noise_std, 
+            noise_seed=noise_seed,
+            initialize=initialize,
+            )
         self.t_initial = t_initial
         self.lr_min_rate = lr_min_rate
         self.warmup_t = warmup_t

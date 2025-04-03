@@ -15,22 +15,6 @@ import torch.distributed as dist
 from diffdist import functional
 
 
-def dist_collect(x):
-    """ 
-    Collect all tensor from all GPUs
-
-    args:
-        x: shape (mini_batch, ...)
-    returns:
-        shape (mini_batch * num_gpu, ...)
-    """
-    x = x.contiguous()
-    out_list = [torch.zeros_like(x, device=x.device, dtype=x.dtype).contiguous()
-                for _ in range(dist.get_world_size())]
-    out_list = functional.all_gather(out_list, x)
-    return torch.cat(out_list, dim=0).contiguous()
-
-
 class SynCo(nn.Module):
     def __init__(self,
                  cfg,
@@ -362,3 +346,19 @@ class MLP(nn.Module):
         x = self.linear_out(x)
 
         return x
+    
+
+def dist_collect(x):
+    """ 
+    Collect all tensor from all GPUs
+
+    args:
+        x: shape (mini_batch, ...)
+    returns:
+        shape (mini_batch * num_gpu, ...)
+    """
+    x = x.contiguous()
+    out_list = [torch.zeros_like(x, device=x.device, dtype=x.dtype).contiguous()
+                for _ in range(dist.get_world_size())]
+    out_list = functional.all_gather(out_list, x)
+    return torch.cat(out_list, dim=0).contiguous()

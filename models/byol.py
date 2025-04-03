@@ -1,5 +1,5 @@
 # --------------------------------------------------------
-# Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning
+# BYOL: A New Approach to Self-Supervised Learning
 # Copyright (c) 2025 Imperial College London
 # Licensed under The MIT License
 # Written by Nikolaos Giakoumoglou
@@ -13,22 +13,6 @@ import torch.nn.functional as F
 import torch.distributed as dist
 
 from diffdist import functional
-
-
-def dist_collect(x):
-    """ 
-    Collect all tensor from all GPUs
-
-    args:
-        x: shape (mini_batch, ...)
-    returns:
-        shape (mini_batch * num_gpu, ...)
-    """
-    x = x.contiguous()
-    out_list = [torch.zeros_like(x, device=x.device, dtype=x.dtype).contiguous()
-                for _ in range(dist.get_world_size())]
-    out_list = functional.all_gather(out_list, x)
-    return torch.cat(out_list, dim=0).contiguous()
 
 
 class BYOL(nn.Module):
@@ -143,3 +127,19 @@ class MLP(nn.Module):
         x = self.linear_hidden(x)
         x = self.linear_out(x)
         return x
+
+
+def dist_collect(x):
+    """ 
+    Collect all tensor from all GPUs
+
+    args:
+        x: shape (mini_batch, ...)
+    returns:
+        shape (mini_batch * num_gpu, ...)
+    """
+    x = x.contiguous()
+    out_list = [torch.zeros_like(x, device=x.device, dtype=x.dtype).contiguous()
+                for _ in range(dist.get_world_size())]
+    out_list = functional.all_gather(out_list, x)
+    return torch.cat(out_list, dim=0).contiguous()

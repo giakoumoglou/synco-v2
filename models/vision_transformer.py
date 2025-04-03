@@ -17,6 +17,7 @@ from timm.models.layers import PatchEmbed
 
 
 __all__ = [
+    # vit with 2D sin-cos position embedding
     'vit_small_patch16_224', 
     'vit_base_patch16_224', 
     'vit_large_patch16_224',
@@ -120,7 +121,7 @@ class ConvStem(nn.Module):
         return x
 
 
-def vit_small_patch16_224(pretrained=False, **kwargs):
+def vit_small_patch16_224(**kwargs):
     model = VisionTransformerMoCo(
         patch_size=16, embed_dim=384, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
@@ -128,7 +129,7 @@ def vit_small_patch16_224(pretrained=False, **kwargs):
     return model
 
 
-def vit_base_patch16_224(pretrained=False, **kwargs):
+def vit_base_patch16_224(**kwargs):
     model = VisionTransformerMoCo(
         patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
@@ -136,7 +137,7 @@ def vit_base_patch16_224(pretrained=False, **kwargs):
     return model
 
 
-def vit_large_patch16_224(pretrained=False, **kwargs):
+def vit_large_patch16_224(**kwargs):
     model = VisionTransformerMoCo(
         patch_size=16, embed_dim=1024, depth=24, num_heads=16, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
@@ -144,7 +145,7 @@ def vit_large_patch16_224(pretrained=False, **kwargs):
     return model
 
 
-def vit_huge_patch14_224(pretrained=False, **kwargs):
+def vit_huge_patch14_224(**kwargs):
     model = VisionTransformerMoCo(
         patch_size=14, embed_dim=1280, depth=32, num_heads=16, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
@@ -152,7 +153,7 @@ def vit_huge_patch14_224(pretrained=False, **kwargs):
     return model
 
 
-def vit_conv_small_patch16_224(pretrained=False, **kwargs):
+def vit_conv_small_patch16_224(**kwargs):
     # minus one ViT block
     model = VisionTransformerMoCo(
         patch_size=16, embed_dim=384, depth=11, num_heads=12, mlp_ratio=4, qkv_bias=True,
@@ -161,7 +162,7 @@ def vit_conv_small_patch16_224(pretrained=False, **kwargs):
     return model
 
 
-def vit_conv_base_patch16_224(pretrained=False, **kwargs):
+def vit_conv_base_patch16_224(**kwargs):
     # minus one ViT block
     model = VisionTransformerMoCo(
         patch_size=16, embed_dim=768, depth=11, num_heads=12, mlp_ratio=4, qkv_bias=True,
@@ -170,7 +171,7 @@ def vit_conv_base_patch16_224(pretrained=False, **kwargs):
     return model
 
 
-def vit_conv_large_patch16_224(pretrained=False, **kwargs):
+def vit_conv_large_patch16_224(**kwargs):
     # minus one ViT block
     model = VisionTransformerMoCo(
         patch_size=16, embed_dim=1024, depth=23, num_heads=16, mlp_ratio=4, qkv_bias=True,
@@ -179,7 +180,7 @@ def vit_conv_large_patch16_224(pretrained=False, **kwargs):
     return model
 
 
-def vit_conv_huge_patch14_224(pretrained=False, **kwargs):
+def vit_conv_huge_patch14_224(**kwargs):
     # minus one ViT block
     model = VisionTransformerMoCo(
         patch_size=14, embed_dim=1280, depth=31, num_heads=16, mlp_ratio=4, qkv_bias=True,

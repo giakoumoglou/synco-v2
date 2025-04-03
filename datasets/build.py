@@ -25,7 +25,7 @@ from .custom_image_folder import CustomImageFolder
 from .samplers import SubsetRandomSampler
 
 
-def build_loader(config, logger):
+def build_loader(config):
     """
     Build data loader for training and validation.
 
@@ -45,13 +45,8 @@ def build_loader(config, logger):
     if not config.EVAL_MODE:
         dataset_train, _ = build_dataset(is_train=True, config=config)
         config.freeze()
-        print(colored(f"Local rank: {config.LOCAL_RANK} / Global rank: {dist.get_rank()} successfully build train dataset", "red"))
-        print(colored(f"Total number of images in training dataset: {len(dataset_train)}", "red"))
     dataset_val, config.MODEL.NUM_CLASSES = build_dataset(is_train=False, config=config)
-    print(colored(f"Local rank: {config.LOCAL_RANK} / Global rank: {dist.get_rank()} successfully build val dataset", "red"))
-    print(colored(f"Total number of images in val dataset: {len(dataset_val)}", "red"))
-    print(colored(f"Number of classes: {config.MODEL.NUM_CLASSES}", "red"))
-    print(colored(f"Datasets are successfully built", "red", attrs=["bold"]))
+
 
     # ================ build samplers ================
     num_tasks = dist.get_world_size()
@@ -85,7 +80,6 @@ def build_loader(config, logger):
         pin_memory=config.DATA.PIN_MEMORY,
         drop_last=False
     )
-    print('Data loaders are successfully built')
 
     # ================ setup mixup / cutmix ================
     mixup_fn = None

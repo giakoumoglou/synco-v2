@@ -4,6 +4,7 @@
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ze Liu
 # Modified by Zhenda Xie
+# Modified by Nikolaos Giakoumoglou
 # --------------------------------------------------------
 
 import torch
@@ -14,6 +15,7 @@ from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 
 
 __all__ = [
+    # swin transformer
     'swin_tiny_patch4_window7_224', 
     'swin_small_patch4_window7_224', 
     'swin_base_patch4_window7_224', 
@@ -608,121 +610,88 @@ class SwinTransformer(nn.Module):
         return flops
     
 
-def swin_tiny_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-T: Tiny variant of Swin Transformer for 224x224 images
-    C=96, layer numbers={2, 2, 6, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
+class SwinTransformerMoCo(SwinTransformer):
+    def __init__(self, stop_grad_conv1=False, **kwargs):
+        # Set default values that can be overridden by kwargs
+        default_kwargs = {
+            'num_classes': 0,  # Typically 0 as it's feature extraction
+            'drop_rate': 0.0,
+            'attn_drop_rate': 0.0,
+            'drop_path_rate': 0.1,
+            'ape': False,
+            'patch_norm': True,
+            'use_checkpoint': False,
+            'norm_before_mlp': 'ln'
+        }
+        
+        # Update defaults with any passed kwargs
+        default_kwargs.update(kwargs)
+        
+        super().__init__(**default_kwargs)
+
+        # Option to stop gradients for the first conv layer
+        if stop_grad_conv1:
+            for param in self.patch_embed.proj.parameters():
+                param.requires_grad = False
+
+        # Custom initialization if needed
+        self.apply(self._init_weights)
+
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            trunc_normal_(m.weight, std=.02)
+            if isinstance(m, nn.Linear) and m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.constant_(m.bias, 0)
+            nn.init.constant_(m.weight, 1.0)
+
+
+def swin_tiny_patch4_window7_224(**kwargs):
+    model = SwinTransformerMoCo(
+        img_size=224, patch_size=4, in_chans=3,
         embed_dim=96, depths=[2, 2, 6, 2], num_heads=[3, 6, 12, 24],
         window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.2,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, **kwargs)
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
     return model
 
-
-def swin_small_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-S: Small variant of Swin Transformer for 224x224 images
-    C=96, layer numbers={2, 2, 18, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
+def swin_small_patch4_window7_224(**kwargs):
+    model = SwinTransformerMoCo(
+        img_size=224, patch_size=4, in_chans=3,
         embed_dim=96, depths=[2, 2, 18, 2], num_heads=[3, 6, 12, 24],
         window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.3,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, **kwargs)
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
     return model
 
-
-def swin_base_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-B: Base variant of Swin Transformer for 224x224 images
-    C=128, layer numbers={2, 2, 18, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
+def swin_base_patch4_window7_224(**kwargs):
+    model = SwinTransformerMoCo(
+        img_size=224, patch_size=4, in_chans=3,
         embed_dim=128, depths=[2, 2, 18, 2], num_heads=[4, 8, 16, 32],
         window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.5,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, **kwargs)
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
     return model
 
-
-def swin_large_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-L: Large variant of Swin Transformer for 224x224 images
-    C=192, layer numbers={2, 2, 18, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
+def swin_large_patch4_window7_224(**kwargs):
+    model = SwinTransformerMoCo(
+        img_size=224, patch_size=4, in_chans=3,
         embed_dim=192, depths=[2, 2, 18, 2], num_heads=[6, 12, 24, 48],
         window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.5,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, **kwargs)
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
     return model
 
+# BN variants
+def swin_tiny_bn_patch4_window7_224(**kwargs):
+    kwargs['norm_before_mlp'] = 'bn'
+    return swin_tiny_patch4_window7_224(**kwargs)
 
-def swin_tiny_bn_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-T: Tiny variant of Swin Transformer for 224x224 images
-    C=96, layer numbers={2, 2, 6, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
-        embed_dim=96, depths=[2, 2, 6, 2], num_heads=[3, 6, 12, 24],
-        window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.2,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, norm_before_mlp='bn', **kwargs)
-    return model
+def swin_small_bn_patch4_window7_224(**kwargs):
+    kwargs['norm_before_mlp'] = 'bn'
+    return swin_small_patch4_window7_224(**kwargs)
 
+def swin_base_bn_patch4_window7_224(**kwargs):
+    kwargs['norm_before_mlp'] = 'bn'
+    return swin_base_patch4_window7_224(**kwargs)
 
-def swin_small_bn_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-S: Small variant of Swin Transformer for 224x224 images
-    C=96, layer numbers={2, 2, 18, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
-        embed_dim=96, depths=[2, 2, 18, 2], num_heads=[3, 6, 12, 24],
-        window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.3,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, norm_before_mlp='bn', **kwargs)
-    return model
-
-
-def swin_base_bn_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-B: Base variant of Swin Transformer for 224x224 images
-    C=128, layer numbers={2, 2, 18, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
-        embed_dim=128, depths=[2, 2, 18, 2], num_heads=[4, 8, 16, 32],
-        window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.5,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, norm_before_mlp='bn', **kwargs)
-    return model
-
-
-def swin_large_bn_patch4_window7_224(pretrained=False, **kwargs):
-    """
-    Swin-L: Large variant of Swin Transformer for 224x224 images
-    C=192, layer numbers={2, 2, 18, 2}
-    """
-    model = SwinTransformer(
-        img_size=224, patch_size=4, in_chans=3, num_classes=1000,
-        embed_dim=192, depths=[2, 2, 18, 2], num_heads=[6, 12, 24, 48],
-        window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
-        drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.5,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), ape=False, patch_norm=True,
-        use_checkpoint=False, norm_before_mlp='bn', **kwargs)
-    return model
+def swin_large_bn_patch4_window7_224(**kwargs):
+    kwargs['norm_before_mlp'] = 'bn'
+    return swin_large_patch4_window7_224(**kwargs)
