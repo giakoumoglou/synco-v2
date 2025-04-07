@@ -3,10 +3,13 @@
 This is a PyTorch implementation of the [SynCo-v2 paper](https://arxiv.org/abs/XXXX.XXXXX):
 ```
 @misc{giakoumoglou2025syncov2,
-  author  = {Nikolaos Giakoumoglou and Tania Stathaki},
-  title   = {Unsupervised Training of Vision Transformers with Synthetic Negatives},
-  journal = {arXiv preprint arXiv:XXXX.XXXXX},
-  year    = {2025},
+      title={Unsupervised Training of Vision Transformers with Synthetic Negatives}, 
+      author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
+      year={2025},
+      eprint={0000.00000},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/0000.00000}, 
 }
 ```
 It also contains the implementation of:
