@@ -1,0 +1,141 @@
+TAG="default"
+
+############################################
+# MOBY Swin-Tiny
+############################################
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_pretrain.py \
+    --cfg configs/moby_swin_tiny.yaml \
+    --data-path $DATA_PATH \
+    --batch-size 32 \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_linear.py \
+    --cfg configs/moby_swin_tiny.yaml \
+    --data-path $DATA_PATH \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+############################################
+# MoBY ViT-Small
+############################################
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_pretrain.py \
+    --cfg configs/moby_vit_small.yaml \
+    --data-path $DATA_PATH \
+    --batch-size 32 \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_linear.py \
+    --cfg configs/moby_vit_small.yaml \
+    --data-path $DATA_PATH \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+############################################
+# BYOL Swin-Tiny
+############################################
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_pretrain.py \
+    --cfg configs/byol_swin_tiny.yaml \
+    --data-path $DATA_PATH \
+    --batch-size 32 \
+    --gradient-accumulation-steps 8 \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_linear.py \
+    --cfg configs/byol_swin_tiny.yaml \
+    --data-path $DATA_PATH \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+	
+############################################
+# BYOL ViT-Small
+############################################
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_pretrain.py \
+    --cfg configs/byol_vit_small.yaml \
+    --data-path $DATA_PATH \
+    --batch-size 32 \
+    --gradient-accumulation-steps 8 \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_linear.py \
+    --cfg configs/byol_vit_small.yaml \
+    --data-path $DATA_PATH \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+############################################
+# SynCo Swin-Tiny
+############################################
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_pretrain.py \
+    --cfg configs/synco_swin_tiny.yaml \
+    --data-path $DATA_PATH \
+    --batch-size 32 \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_linear.py \
+    --cfg configs/synco_swin_tiny.yaml \
+    --data-path $DATA_PATH \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+############################################
+# SynCo ViT-Small
+############################################
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_pretrain.py \
+    --cfg configs/synco_vit_small.yaml \
+    --data-path $DATA_PATH \
+    --batch-size 128 \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
+
+python -m torch.distributed.launch \
+    --nproc_per_node=1 \
+    --master_port=$MASTER_PORT \
+    main_linear.py \
+    --cfg configs/synco_vit_small.yaml \
+    --data-path $DATA_PATH \
+    --output $OUTPUT_DIR \
+    --tag $TAG --opts TRAIN.EPOCHS 1
