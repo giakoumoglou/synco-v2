@@ -41,7 +41,7 @@ def build_loader(config):
     config.defrost()
 
     # ================ build datasets ================
-    dataset_train = None
+    dataset_train = datasets.FakeData(size=1000, image_size=(3, 224, 224), num_classes=1000, transform=build_transform(is_train=True, config=config))  # dummy dataset for training
     if not config.EVAL_MODE:
         dataset_train, _ = build_dataset(is_train=True, config=config)
     dataset_val, config.MODEL.NUM_CLASSES = build_dataset(is_train=False, config=config)
@@ -50,25 +50,22 @@ def build_loader(config):
     # ================ build samplers ================
     num_tasks = dist.get_world_size()
     global_rank = dist.get_rank()
-    if not config.EVAL_MODE:
-        if config.DATA.ZIP_MODE and config.DATA.CACHE_MODE == 'part':
-            indices = np.arange(dist.get_rank(), len(dataset_train), dist.get_world_size())
-            sampler_train = SubsetRandomSampler(indices)
-        else:
-            sampler_train = torch.utils.data.DistributedSampler(dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True)
+    if config.DATA.ZIP_MODE and config.DATA.CACHE_MODE == 'part':
+        indices = np.arange(dist.get_rank(), len(dataset_train), dist.get_world_size())
+        sampler_train = SubsetRandomSampler(indices)
+    else:
+        sampler_train = torch.utils.data.DistributedSampler(dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True)
 
-        indices = np.arange(dist.get_rank(), len(dataset_val), dist.get_world_size())
-        sampler_val = SubsetRandomSampler(indices)
+    indices = np.arange(dist.get_rank(), len(dataset_val), dist.get_world_size())
+    sampler_val = SubsetRandomSampler(indices)
 
     # ================ build data loaders ================
-    data_loader_train = None
-    if not config.EVAL_MODE:
-        data_loader_train = torch.utils.data.DataLoader(
-            dataset_train, sampler=sampler_train,
-            batch_size=config.DATA.BATCH_SIZE,
-            num_workers=config.DATA.NUM_WORKERS,
-            pin_memory=config.DATA.PIN_MEMORY,
-            drop_last=True,
+    data_loader_train = torch.utils.data.DataLoader(
+        dataset_train, sampler=sampler_train,
+        batch_size=config.DATA.BATCH_SIZE,
+        num_workers=config.DATA.NUM_WORKERS,
+        pin_memory=config.DATA.PIN_MEMORY,
+        drop_last=True,
         )
 
     data_loader_val = torch.utils.data.DataLoader(
@@ -161,17 +158,17 @@ def build_dataset(is_train, config):
     elif config.DATA.DATASET == 'oxford_flowers102':
         config.DATA.DATA_PATH = './data/'
         if is_train:
-            dataset = datasets.Flowers102(root=config.DATA.DATA_PATH, train=True, download=True, transform=transform)
+            dataset = datasets.Flowers102(root=config.DATA.DATA_PATH, split='train', download=True, transform=transform)
         else:
-            dataset = datasets.Flowers102(root=config.DATA.DATA_PATH, train=False, download=True, transform=transform)
+            dataset = datasets.Flowers102(root=config.DATA.DATA_PATH, split='test', download=True, transform=transform)
         nb_classes = 102
     # ================ oxford pets ================
     elif config.DATA.DATASET == 'oxford_pets':
         config.DATA.DATA_PATH = './data/'
         if is_train:
-            dataset = datasets.OxfordIIITPet(root=config.DATA.DATA_PATH, image_set='train', download=True, transform=transform)
+            dataset = datasets.OxfordIIITPet(root=config.DATA.DATA_PATH, split='trainval', download=True, transform=transform)
         else:
-            dataset = datasets.OxfordIIITPet(root=config.DATA.DATA_PATH, image_set='test', download=True, transform=transform)
+            dataset = datasets.OxfordIIITPet(root=config.DATA.DATA_PATH, split='test', download=True, transform=transform)
         nb_classes = 37
     # ================ food101 ================
     elif config.DATA.DATASET == 'food101':

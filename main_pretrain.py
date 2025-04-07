@@ -65,6 +65,7 @@ def main(config):
 
     # ================ data ================
     dataset_train, _, data_loader_train, _, _ = build_loader(config)
+    logger.info("Number of training samples: {}".format(len(dataset_train)))
     
     config.defrost()
     config.DATA.TRAINING_IMAGES = len(dataset_train)
@@ -74,7 +75,7 @@ def main(config):
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
     model.cuda()
-    #logger.info(str(model))
+    logger.info(str(model))
 
     # ================ optimizer ================
     optimizer = build_optimizer(config, model)

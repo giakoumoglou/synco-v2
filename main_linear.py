@@ -96,17 +96,28 @@ def parse_option():
 def main(config):    
     # ================ data ================
     _, dataset_val, data_loader_train, data_loader_val, mixup_fn = build_loader(config)
+    if data_loader_train is not None:
+        logger.info("Number of training samples: {}".format(len(data_loader_train.dataset)))
+    else:
+        logger.info("Running in evaluation mode - no training data loaded")
+    logger.info("Number of validation samples: {}".format(len(data_loader_val.dataset)))
+    logger.info("Number of classes: {}".format(config.MODEL.NUM_CLASSES))
 
     # ================ model ================
     logger.info(f"Creating model: {config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
     model.cuda()
-    #logger.info(str(model))
+    logger.info(str(model))
     
     # ================ fix parameters ================
-    for name, p in model.named_parameters():
-        if 'fc' not in name and 'head' not in name:
-            p.requires_grad = False
+    if config.MODEL.ENCODER.startswith('resnet'):
+        for name, p in model.named_parameters():
+            if 'fc' not in name:
+                p.requires_grad = False
+    else:
+        for name, p in model.named_parameters():
+            if 'head' not in name:
+                p.requires_grad = False
 
     # ================ optimizer ================
     optimizer = build_optimizer(config, model)
