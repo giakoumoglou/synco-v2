@@ -11,20 +11,26 @@ from torchvision import datasets
 class CustomImageFolder(datasets.ImageFolder):
     def __getitem__(self, index):
         """
-        args:
+        Args:
             index (int): Index
-        returns:
-            tuple (image, target): where target is class_index of the target class.
+        Returns:
+            tuple: (image, target) where target is class_index of the target class.
         """
         path, target = self.samples[index]
         image = self.loader(path)
         
         ret = []
+        
         if self.transform is not None:
-            for t in self.transform:
-                ret.append(t(image))
+            if isinstance(self.transform, (list, tuple)):  # if transform is a list or tuple
+                for t in self.transform:
+                    ret.append(t(image))
+            else:  # if transform is a single callable
+                ret.append(self.transform(image))
         else:
             ret.append(image)
+        
+        # Apply target transformation if provided
         if self.target_transform is not None:
             target = self.target_transform(target)
         ret.append(target)

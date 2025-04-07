@@ -35,7 +35,7 @@ except ImportError:
 
 
 def parse_option():
-    parser = argparse.ArgumentParser('Linear probing', add_help=False)
+    parser = argparse.ArgumentParser('Linear probing script', add_help=False)
     parser.add_argument('--cfg', type=str, required=True, metavar="FILE", help='path to config file')
     parser.add_argument("--opts", help="Modify config options by adding 'KEY VALUE' pairs.", default=None, nargs='+')
 
@@ -47,7 +47,7 @@ def parse_option():
     parser.add_argument('--resume', help='resume from checkpoint')
     parser.add_argument('--accumulation-steps', type=int, help="gradient accumulation steps")
     parser.add_argument('--use-checkpoint', action='store_true', help="whether to use gradient checkpointing to save memory")
-    parser.add_argument('--amp-opt-level', type=str, default='O1', choices=['O0', 'O1', 'O2'], help='mixed precision opt level, if O0, no amp is used')
+    parser.add_argument('--amp-opt-level', type=str, default='O0', choices=['O0', 'O1', 'O2'], help='mixed precision opt level, if O0, no amp is used')
     parser.add_argument('--output', default='output', type=str, metavar='PATH', help='root of output folder, the full path is <output>/<model_name>/<tag> (default: output)')
     parser.add_argument('--tag', help='tag of experiment')
     parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
@@ -64,6 +64,7 @@ def parse_option():
 
     config = get_config(args)
 
+    # ================ overwrite linear probing ================
     config.defrost()
     # base
     config.LINEAR_EVAL.PRETRAINED = os.path.join(config.OUTPUT, 'checkpoint.pth')
@@ -100,7 +101,7 @@ def main(config):
     logger.info(f"Creating model: {config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
     model.cuda()
-    logger.info(str(model))
+    #logger.info(str(model))
     
     # ================ fix parameters ================
     for name, p in model.named_parameters():
@@ -118,8 +119,10 @@ def main(config):
     load_pretrained(model_without_ddp, config.LINEAR_EVAL.PRETRAINED, logger)
 
     # ================ print parameters & flops ================
-    n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    logger.info(f"Number of params: {n_parameters}")
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    logger.info(f"Total parameters: {total_params:,}")
+    logger.info(f"Trainable parameters: {trainable_params:,} ({trainable_params/total_params:.2%})")
     if hasattr(model_without_ddp, 'flops'):
         flops = model_without_ddp.flops()
         logger.info(f"Number of GFLOPs: {flops / 1e9}")
@@ -428,7 +431,7 @@ if __name__ == '__main__':
         logger.info(f"Full config saved to {path}")
 
     # ================ print config ================
-    logger.info(config.dump())
+    #logger.info(config.dump())
 
     # ================ run ================
     main(config)

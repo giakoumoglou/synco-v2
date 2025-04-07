@@ -33,7 +33,7 @@ except ImportError:
 
 
 def parse_option():
-    parser = argparse.ArgumentParser('Self-supervised pretraining', add_help=False)
+    parser = argparse.ArgumentParser('Self-supervised pretraining script', add_help=False)
     parser.add_argument('--cfg', type=str, required=True, metavar="FILE", help='path to config file', )
     parser.add_argument("--opts", help="Modify config options by adding 'KEY VALUE' pairs. ", default=None, nargs='+')
 
@@ -74,7 +74,7 @@ def main(config):
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
     model.cuda()
-    logger.info(str(model))
+    #logger.info(str(model))
 
     # ================ optimizer ================
     optimizer = build_optimizer(config, model)
@@ -84,8 +84,10 @@ def main(config):
     model_without_ddp = model.module
 
     # ================ print ================
-    n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    logger.info(f"Number of params: {n_parameters}")
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    logger.info(f"Total parameters: {total_params:,}")
+    logger.info(f"Trainable parameters: {trainable_params:,} ({trainable_params/total_params:.2%})")
     if hasattr(model_without_ddp, 'flops'):
         flops = model_without_ddp.flops()
         logger.info(f"Number of GFLOPs: {flops / 1e9}")
@@ -254,7 +256,7 @@ if __name__ == '__main__':
         logger.info(f"Full config saved to {path}")
 
     # ================ print config ================
-    logger.info(config.dump())
+    #logger.info(config.dump())
 
     # ================ run ================
     main(config)

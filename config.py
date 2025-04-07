@@ -33,8 +33,6 @@ _C.DATA.NUM_WORKERS = 8
 # Model settings
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
-#_C.MODEL.ENCODER = 'swin_tiny'
-#_C.MODEL.NAME = 'swin_tiny'
 _C.MODEL.RESUME = ''
 _C.MODEL.NUM_CLASSES = 1000
 _C.MODEL.DROP_RATE = 0.0
@@ -47,14 +45,15 @@ _C.MODEL.LABEL_SMOOTHING = 0.1
 _C.MODEL.TYPE = 'moby'
 _C.MODEL.ENCODER = 'swin_tiny'
 _C.MODEL.NAME = 'moby__swin_tiny'
-_C.MODEL.ONLINE_DROP_PATH_RATE = 0.1
+_C.MODEL.ONLINE_DROP_PATH_RATE = 0.1 # trick 1: asymmetric drop path
 _C.MODEL.TARGET_DROP_PATH_RATE = 0.0
 _C.MODEL.CONTRAST_MOMENTUM = 0.99
 _C.MODEL.CONTRAST_TEMPERATURE = 0.2
 _C.MODEL.CONTRAST_NUM_NEGATIVE = 4096
 _C.MODEL.PROJ_NUM_LAYERS = 2
 _C.MODEL.PRED_NUM_LAYERS = 2
-_C.MODEL.STOP_GRAD_CONV1 = False
+_C.MODEL.STOP_GRAD_CONV1 = False # trick 2: stop grad conv1
+_C.MODEL.REPLACE_LN_WITH_BN = False # trick 3: replace ln with bn
 _C.MODEL.N_HARD = 256
 _C.MODEL.N1 = 128
 _C.MODEL.N2 = 128

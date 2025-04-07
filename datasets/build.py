@@ -44,9 +44,8 @@ def build_loader(config):
     dataset_train = None
     if not config.EVAL_MODE:
         dataset_train, _ = build_dataset(is_train=True, config=config)
-        config.freeze()
     dataset_val, config.MODEL.NUM_CLASSES = build_dataset(is_train=False, config=config)
-
+    config.freeze()
 
     # ================ build samplers ================
     num_tasks = dist.get_world_size()
@@ -107,9 +106,9 @@ def build_dataset(is_train, config):
         nb_classes (int): number of classes
     """
     transform = build_transform(is_train, config)
-    
+    print(colored(f"==============> Building {'training' if is_train else 'validation'} dataset {config.DATA.DATASET} ....................", "red"))
+
     # ================ imagenet ================
-    print(colored('Building dataset: ' + config.DATA.DATASET, "red"))
     if config.DATA.DATASET == 'imagenet':
         prefix = 'train' if is_train else 'val'
         if config.DATA.ZIP_MODE:

@@ -53,6 +53,10 @@ class MoBY(nn.Module):
             param_k.data.copy_(param_q.data)
             param_k.requires_grad = False
 
+        if "resnet" in cfg.MODEL.ENCODER or ("swin" in cfg.MODEL.ENCODER and "bn" in cfg.MODEL.ENCODER):
+            self.encoder = nn.SyncBatchNorm.convert_sync_batchnorm(self.encoder)
+            self.encoder_k = nn.SyncBatchNorm.convert_sync_batchnorm(self.encoder_k)
+
         nn.SyncBatchNorm.convert_sync_batchnorm(self.projector)
         nn.SyncBatchNorm.convert_sync_batchnorm(self.projector_k)
         nn.SyncBatchNorm.convert_sync_batchnorm(self.predictor)
@@ -161,7 +165,7 @@ class MoBY(nn.Module):
     
 class MLP(nn.Module):
     def __init__(self, in_dim=256, inner_dim=4096, out_dim=256, num_layers=2):
-        super(MoBYMLP, self).__init__()
+        super(MLP, self).__init__()
         
         # hidden layers
         linear_hidden = [nn.Identity()]

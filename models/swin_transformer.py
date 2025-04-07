@@ -222,7 +222,7 @@ class SwinTransformerBlock(nn.Module):
         if self.norm_before_mlp == 'ln':
             self.norm2 = nn.LayerNorm(dim)
         elif self.norm_before_mlp == 'bn':
-            self.norm2 = lambda x: nn.BatchNorm1d(dim)(x.transpose(1, 2)).transpose(1, 2)
+            self.norm2 = nn.BatchNorm1d(dim)
         else:
             raise NotImplementedError
         mlp_hidden_dim = int(dim * mlp_ratio)
@@ -288,7 +288,13 @@ class SwinTransformerBlock(nn.Module):
 
         # FFN
         x = shortcut + self.drop_path(x)
-        x = x + self.drop_path(self.mlp(self.norm2(x)))
+        if self.norm_before_mlp == 'ln':
+            x = x + self.drop_path(self.mlp(self.norm2(x)))
+        elif self.norm_before_mlp == 'bn':
+            x_t = x.transpose(1, 2)
+            x_t = self.norm2(x_t)
+            x_t = x_t.transpose(1, 2)
+            x = x + self.drop_path(self.mlp(x_t))
 
         return x
 
