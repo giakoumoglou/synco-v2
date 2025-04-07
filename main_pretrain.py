@@ -33,7 +33,7 @@ except ImportError:
 
 
 def parse_option():
-    parser = argparse.ArgumentParser('MoBY training and evaluation script', add_help=False)
+    parser = argparse.ArgumentParser('Self-supervised pretraining', add_help=False)
     parser.add_argument('--cfg', type=str, required=True, metavar="FILE", help='path to config file', )
     parser.add_argument("--opts", help="Modify config options by adding 'KEY VALUE' pairs. ", default=None, nargs='+')
 
