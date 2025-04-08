@@ -64,21 +64,21 @@ The scripts expect the following dataset structures:
 
 ### Unsupervised Training
 
-To do unsupervised pre-training with MoBY framework using DeiT-Small backbone on ImageNet on a 4-gpu machine, run:
+To do unsupervised pre-training with MoBY framework using ViT-Small backbone on ImageNet on a 4-gpu machine, run:
 
 ```
 python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=12345 \
     main_pretrain.py \
-    --cfg configs/moby_swin_tiny.yaml \
+    --cfg configs/moby_vit_tiny.yaml \
     --data-path [your imagenet-folder with train and val folders] \
     --batch-size 128 \
     --output [output folder] \
     --tag [tag folder] \
 ```
 
-Similarly for SynCo or BYOL.
+To run unsupervised pre-training with SynCo or BYOL instead of MoBY, you would use the same command structure as shown in the MoBY example, but you'd need to change the configuration file to point to the appropriate framework's config. For different model architectures such as Swin-Tiny, Swin-Small, Swin-Base, ViT-Small, or ViT-Base, simply select the corresponding configuration file (see [./configs](configs)) while keeping all other command parameters the same.
 
 ### Linear Classification
 
