@@ -257,7 +257,7 @@ if __name__ == '__main__':
         logger.info(f"Full config saved to {path}")
 
     # ================ print config ================
-    #logger.info(config.dump())
+    logger.info(config.dump())
 
     # ================ run ================
     main(config)

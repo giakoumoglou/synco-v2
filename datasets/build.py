@@ -41,7 +41,7 @@ def build_loader(config):
     config.defrost()
 
     # ================ build datasets ================
-    dataset_train = datasets.FakeData(size=1000, image_size=(3, 224, 224), num_classes=1000, transform=build_transform(is_train=True, config=config))  # dummy dataset for training
+    dataset_train = datasets.FakeData(size=130000, image_size=(3, 224, 224), num_classes=100, transform=build_transform(is_train=True, config=config))  # dummy dataset for training
     if not config.EVAL_MODE:
         dataset_train, _ = build_dataset(is_train=True, config=config)
     dataset_val, config.MODEL.NUM_CLASSES = build_dataset(is_train=False, config=config)
