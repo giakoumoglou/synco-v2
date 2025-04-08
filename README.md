@@ -37,7 +37,7 @@ and [MoBY paper](https://arxiv.org/abs/2105.04553):
       url={https://arxiv.org/abs/2105.04553}, 
 }
 ```
-This repo is also used for the following papers:
+This repo is also used for [Clones paper](https://arxiv.org/abs/XXXX.XXXXX) and [Trash paper](https://arxiv.org/abs/XXXX.XXXXX):
 
 ```
 @misc{giakoumoglou2025clones,
