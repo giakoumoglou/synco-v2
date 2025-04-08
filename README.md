@@ -12,7 +12,7 @@ This is a PyTorch implementation of the [SynCo-v2 paper](https://arxiv.org/abs/X
       url={https://arxiv.org/abs/0000.00000}, 
 }
 ```
-It also contains the implementation of:
+It also contains the implementation of [BYOL paper](https://arxiv.org/abs/2006.07733):
 
 ```
 @misc{grill2020byol,
@@ -25,7 +25,7 @@ It also contains the implementation of:
       url={https://arxiv.org/abs/2006.07733}, 
 }
 ```
-
+and [MoBY paper](https://arxiv.org/abs/2105.04553):
 ```
 @misc{xie2021moby,
       title={Self-Supervised Learning with Swin Transformers}, 
