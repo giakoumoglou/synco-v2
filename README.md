@@ -37,6 +37,31 @@ and [MoBY paper](https://arxiv.org/abs/2105.04553):
       url={https://arxiv.org/abs/2105.04553}, 
 }
 ```
+This repo is also used for the following papers:
+
+```
+@misc{giakoumoglou2025clones,
+      title={Fake it till you make it: Self-supervised Learning on Synthetic Data clones}, 
+      author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
+      year={2025},
+      eprint={0000.00000},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/0000.00000}, 
+}
+```
+
+```
+@misc{giakoumoglou2025trash,
+      title={One Man’s Trash is Another Man's Treasure: Self-supervised Models are Strong Representation Learners}, 
+      author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
+      year={2025},
+      eprint={0000.00000},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/0000.00000}, 
+}
+```
 
 ### Preparation
 
