@@ -41,7 +41,7 @@ This repo is also used for [Clones paper](https://arxiv.org/abs/XXXX.XXXXX) and 
 
 ```
 @misc{giakoumoglou2025clones,
-      title={Fake it till you make it: Self-supervised Learning on Synthetic Data clones}, 
+      title={Revenge of the clones: Self-supervised Learning on Synthetic Data clones}, 
       author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
       year={2025},
       eprint={0000.00000},
