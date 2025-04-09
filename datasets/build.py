@@ -178,6 +178,7 @@ def build_dataset(is_train, config):
         else:
             dataset = datasets.Food101(root=config.DATA.DATA_PATH, split='test', download=True, transform=transform)
         nb_classes = 101
+    # ================ cars ================
     elif config.DATA.DATASET == 'standford_cars':
         config.DATA.DATA_PATH = './data/'
         if is_train:
