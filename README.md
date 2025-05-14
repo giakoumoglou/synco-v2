@@ -5,10 +5,11 @@ This is a PyTorch implementation of the [SynCo-v2 paper](https://arxiv.org/abs/X
 @inproceedings{giakoumoglou2025syncov2,
 title={Unsupervised Training of Vision Transformers with Synthetic Negatives},
 author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
-booktitle={Second Workshop on Visual Concepts},
+booktitle={Proceedings of the CVPR 2025 Workshop on Visual Concepts},
 year={2025},
 url={https://openreview.net/forum?id=dg8FuaOKnC}
 }
+
 ```
 It also contains the implementation of [BYOL paper](https://arxiv.org/abs/2006.07733):
 
