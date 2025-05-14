@@ -2,14 +2,12 @@
 
 This is a PyTorch implementation of the [SynCo-v2 paper](https://arxiv.org/abs/XXXX.XXXXX):
 ```
-@misc{giakoumoglou2025syncov2,
-      title={Unsupervised Training of Vision Transformers with Synthetic Negatives}, 
-      author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
-      year={2025},
-      eprint={0000.00000},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/0000.00000}, 
+@inproceedings{giakoumoglou2025syncov2,
+title={Unsupervised Training of Vision Transformers with Synthetic Negatives},
+author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
+booktitle={Second Workshop on Visual Concepts},
+year={2025},
+url={https://openreview.net/forum?id=dg8FuaOKnC}
 }
 ```
 It also contains the implementation of [BYOL paper](https://arxiv.org/abs/2006.07733):
