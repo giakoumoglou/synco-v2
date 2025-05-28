@@ -65,7 +65,7 @@ The scripts expect the following dataset structures:
 
 To do unsupervised pre-training with MoBY framework using ViT-Small backbone on ImageNet on a 4-gpu machine, run:
 
-```
+```python
 python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=12345 \
@@ -83,7 +83,7 @@ To run unsupervised pre-training with SynCo or BYOL instead of MoBY, you would u
 
 With a pre-trained model, to train a supervised linear classifier on frozen features/weights in an 4-gpu machine, run:
 
-```
+```python
 python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=12345 \
@@ -95,6 +95,26 @@ python -m torch.distributed.launch \
 ```
 
 Make sure the ```config``` file, ```output``` director and ```tag``` are the same as in the pre-training stage.
+
+### Transfer Learning
+
+With a pre-trained model, to evaluate on downstream datasets (CIFAR-10, CIFAR-100, Stanford Cars, Oxford Flowers102, Oxford Pets, Food101, STL-10) using linear probing on a 4-gpu machine, run:
+
+```python
+python -m torch.distributed.launch \
+    --nproc_per_node=4 \
+    --master_port=12345 \
+    main_linear.py \
+    --cfg configs/moby_swin_tiny.yaml \
+    --data-path [your imagenet-folder with train and val folders] \
+    --output [output folder] \
+    --tag [tag folder] \
+    --opts DATA.DATASET cifar10
+```
+
+For full finetuning instead of linear probing (by default ```LINEAR_EVAL.WEIGHTS frozen```), add: ```--opts DATA.DATASET cifar10 LINEAR_EVAL.WEIGHTS finetune```.
+
+Replace `cifar10` with the desired dataset: `cifar100`, `stanford_cars`, `oxford_flowers102`, `oxford_pets`, `food101`, or `stl10`. Datasets will be automatically downloaded to `./data/` directory.
 
 ### License
 
