@@ -98,7 +98,7 @@ Make sure the ```config``` file, ```output``` director and ```tag``` are the sam
 
 ### Transfer Learning
 
-With a pre-trained model, to evaluate on downstream datasets (CIFAR-10, CIFAR-100, Stanford Cars, Oxford Flowers102, Oxford Pets, Food101, STL-10) using linear probing on a 4-gpu machine, run:
+With a pre-trained model, to evaluate on downstream datasets (CIFAR-10, CIFAR-100, STL-10, Oxford Flowers102, Oxford Pets, Food101, Stanford Cars, Caltech101, DTD, FGVC Aircraft, SUN397, VOC2007, Places365) using linear probing on a 4-gpu machine, run:
 
 ```
 python -m torch.distributed.launch \
@@ -114,8 +114,7 @@ python -m torch.distributed.launch \
 
 For full finetuning instead of linear probing (by default ```LINEAR_EVAL.WEIGHTS frozen```), add: ```--opts DATA.DATASET cifar10 LINEAR_EVAL.WEIGHTS finetune```.
 
-Replace `cifar10` with the desired dataset: `cifar100`, `stanford_cars`, `oxford_flowers102`, `oxford_pets`, `food101`, or `stl10`. Datasets will be automatically downloaded to `./data/` directory.
-
+Replace `cifar10` with the desired dataset: `cifar100`, `stl10`, `flowers`, `pets`, `food101`, `cars`, `caltech101`, `dtd`, `aircraft`, `sun397`, `voc2007`, or `places365`. Datasets will be automatically downloaded to `./data/` directory.
 ### License
 
 This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
