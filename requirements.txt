@@ -1,6 +1,10 @@
 torch
 torchvision
-timm==0.4.5
+timm==0.4.9
 diffdist
 Pillow
 apex
+pyyaml
+yacs
+termcolor
+numpy==1.21.5
