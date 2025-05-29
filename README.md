@@ -78,6 +78,11 @@ pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --extra-index-url http
 pip install timm==0.4.9 --user
 pip install diffdist --user
 pip install Pillow --user
+pip install pyyaml
+pip install yacs
+pip install termcolor
+pip install scipy
+pip install numpy==1.21.5
 ```
 
 **Note:** These commands set up a complete environment compatible with CUDA 11.7/11.8 and the specific PyTorch version required for this implementation.
