@@ -63,7 +63,7 @@ The scripts expect the following dataset structures:
 
 ### Environment Setup
 
-To set up the environment correctly, follow these steps:
+To set up the environment correctly in [PBS](https://en.wikipedia.org/wiki/Portable_Batch_System), follow these steps:
 
 ```bash
 conda create -n moby -c conda-forge cudatoolkit=11.8 python=3.10.11
