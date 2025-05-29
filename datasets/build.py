@@ -80,6 +80,70 @@ class VOCClassification(torch.utils.data.Dataset):
         return image, label
 
 
+def build_loader(config):
+    """
+    Build data loader for training and validation.
+
+    args:
+        config (config): config
+    returns:
+        dataset_train (torch.utils.data.Dataset): training dataset
+        dataset_val (torch.utils.data.Dataset): validation dataset
+        data_loader_train (torch.utils.data.DataLoader): training data loader
+        data_loader_val (torch.utils.data.DataLoader): validation data loader
+        mixup_fn: mixup function
+    """
+    config.defrost()
+
+    # ================ build datasets ================
+    dataset_train = datasets.FakeData(size=130000, image_size=(3, 224, 224), num_classes=100, transform=build_transform(is_train=True, config=config))  # dummy dataset for training
+    if not config.EVAL_MODE:
+        dataset_train, _ = build_dataset(is_train=True, config=config)
+    dataset_val, config.MODEL.NUM_CLASSES = build_dataset(is_train=False, config=config)
+    config.freeze()
+
+    # ================ build samplers ================
+    num_tasks = dist.get_world_size()
+    global_rank = dist.get_rank()
+    if config.DATA.ZIP_MODE and config.DATA.CACHE_MODE == 'part':
+        indices = np.arange(dist.get_rank(), len(dataset_train), dist.get_world_size())
+        sampler_train = SubsetRandomSampler(indices)
+    else:
+        sampler_train = torch.utils.data.DistributedSampler(dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True)
+
+    indices = np.arange(dist.get_rank(), len(dataset_val), dist.get_world_size())
+    sampler_val = SubsetRandomSampler(indices)
+
+    # ================ build data loaders ================
+    data_loader_train = torch.utils.data.DataLoader(
+        dataset_train, sampler=sampler_train,
+        batch_size=config.DATA.BATCH_SIZE,
+        num_workers=config.DATA.NUM_WORKERS,
+        pin_memory=config.DATA.PIN_MEMORY,
+        drop_last=True,
+        )
+
+    data_loader_val = torch.utils.data.DataLoader(
+        dataset_val, sampler=sampler_val,
+        batch_size=config.DATA.BATCH_SIZE,
+        shuffle=False,
+        num_workers=config.DATA.NUM_WORKERS,
+        pin_memory=config.DATA.PIN_MEMORY,
+        drop_last=False
+    )
+
+    # ================ setup mixup / cutmix ================
+    mixup_fn = None
+    mixup_active = config.AUG.MIXUP > 0 or config.AUG.CUTMIX > 0. or config.AUG.CUTMIX_MINMAX is not None
+    if mixup_active:
+        mixup_fn = Mixup(
+            mixup_alpha=config.AUG.MIXUP, cutmix_alpha=config.AUG.CUTMIX, cutmix_minmax=config.AUG.CUTMIX_MINMAX,
+            prob=config.AUG.MIXUP_PROB, switch_prob=config.AUG.MIXUP_SWITCH_PROB, mode=config.AUG.MIXUP_MODE,
+            label_smoothing=config.MODEL.LABEL_SMOOTHING, num_classes=config.MODEL.NUM_CLASSES)
+
+    return dataset_train, dataset_val, data_loader_train, data_loader_val, mixup_fn
+
+
 def build_dataset(is_train, config):
     """
     Build dataset for training and validation. 
