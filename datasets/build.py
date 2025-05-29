@@ -78,7 +78,7 @@ class VOCClassification(torch.utils.data.Dataset):
             image = self.transform(image)
             
         return image, label
-
+    
 
 def build_loader(config):
     """
@@ -237,17 +237,31 @@ def build_dataset(is_train, config):
     elif config.DATA.DATASET == 'standford_cars' or config.DATA.DATASET == 'cars':
         config.DATA.DATA_PATH = './data/'
         if is_train:
-            dataset = datasets.StanfordCars(root=config.DATA.DATA_PATH, train=True, download=False, transform=transform)
+            dataset = datasets.StanfordCars(root=config.DATA.DATA_PATH, split='train', download=False, transform=transform)
         else:
-            dataset = datasets.StanfordCars(root=config.DATA.DATA_PATH, train=False, download=False, transform=transform)
+            dataset = datasets.StanfordCars(root=config.DATA.DATA_PATH, split='test', download=False, transform=transform)
         nb_classes = 196
     # ================ caltech101 ================
     elif config.DATA.DATASET == 'caltech101' or config.DATA.DATASET == 'caltech':
         config.DATA.DATA_PATH = './data/'
-        if is_train:
-            dataset = datasets.Caltech101(root=config.DATA.DATA_PATH, target_type='category', download=True, transform=transform)
+        if transform is not None:
+            if hasattr(transform, 'transforms'):
+                orig_transforms = transform.transforms
+            else:
+                orig_transforms = [transform]
+            rgb_transform = transforms.Compose([
+                transforms.Lambda(lambda x: x.convert('RGB')),  # Ensure RGB
+                *orig_transforms
+            ])
         else:
-            dataset = datasets.Caltech101(root=config.DATA.DATA_PATH, target_type='category', download=True, transform=transform)
+            rgb_transform = transforms.Compose([
+                transforms.Lambda(lambda x: x.convert('RGB')),
+                transforms.ToTensor(),
+            ])
+        if is_train:
+            dataset = datasets.Caltech101(root=config.DATA.DATA_PATH, target_type='category', download=False, transform=rgb_transform)
+        else:
+            dataset = datasets.Caltech101(root=config.DATA.DATA_PATH, target_type='category', download=False, transform=rgb_transform)
         nb_classes = 101
     # ================ dtd ================
     elif config.DATA.DATASET == 'dtd':
@@ -268,6 +282,7 @@ def build_dataset(is_train, config):
     # ================ sun397 ================
     elif config.DATA.DATASET == 'sun397':
         config.DATA.DATA_PATH = './data/'
+        config.DATA.DATA_PATH = '/rds/general/user/ng1523/ephemeral/data/'
         if is_train:
             dataset = datasets.SUN397(root=config.DATA.DATA_PATH, download=True, transform=transform)
         else:
@@ -276,6 +291,7 @@ def build_dataset(is_train, config):
     # ================ voc2007 classification ================
     elif config.DATA.DATASET == 'voc2007' or config.DATA.DATASET == 'voc':
         config.DATA.DATA_PATH = './data/'
+        config.DATA.DATA_PATH = '/rds/general/user/ng1523/ephemeral/data/'
         year = '2007'
         image_set = 'train' if is_train else 'val'
         dataset = VOCClassification(root=config.DATA.DATA_PATH, year=year, image_set=image_set, transform=transform)
@@ -283,6 +299,7 @@ def build_dataset(is_train, config):
     # ================ places365 ================
     elif config.DATA.DATASET == 'places365' or config.DATA.DATASET == 'places':
         config.DATA.DATA_PATH = './data/'
+        config.DATA.DATA_PATH = '/rds/general/user/ng1523/ephemeral/data/'
         if is_train:
             dataset = datasets.Places365(root=config.DATA.DATA_PATH, split='train-standard', small=True, download=True, transform=transform)
         else:
