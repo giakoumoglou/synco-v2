@@ -61,6 +61,27 @@ The scripts expect the following dataset structures:
     └── ...
 ```
 
+### Environment Setup
+
+To set up the environment correctly, follow these steps:
+
+```bash
+conda create -n moby -c conda-forge cudatoolkit=11.8 python=3.10.11
+conda activate moby
+conda install -c "nvidia/label/cuda-11.8.0" cuda-nvcc
+python3 -m pip install nvidia-cudnn-cu11==8.6.0.163
+mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+echo 'CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+echo 'export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$CUDNN_PATH/lib:$LD_LIBRARY_PATH' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+pip install timm==0.4.9 --user
+pip install diffdist --user
+pip install Pillow --user
+```
+
+**Note:** These commands set up a complete environment compatible with CUDA 11.7/11.8 and the specific PyTorch version required for this implementation.
+
 ### Unsupervised Training
 
 To do unsupervised pre-training with MoBY framework using ViT-Small backbone on ImageNet on a 4-gpu machine, run:
