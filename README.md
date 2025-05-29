@@ -11,31 +11,8 @@ url={https://openreview.net/forum?id=dg8FuaOKnC}
 }
 
 ```
-It also contains the implementation of [BYOL paper](https://arxiv.org/abs/2006.07733):
 
-```
-@misc{grill2020byol,
-      title={Bootstrap your own latent: A new approach to self-supervised Learning}, 
-      author={Jean-Bastien Grill and Florian Strub and Florent Altché and Corentin Tallec and Pierre H. Richemond and Elena Buchatskaya and Carl Doersch and Bernardo Avila Pires and Zhaohan Daniel Guo and Mohammad Gheshlaghi Azar and Bilal Piot and Koray Kavukcuoglu and Rémi Munos and Michal Valko},
-      year={2020},
-      eprint={2006.07733},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2006.07733}, 
-}
-```
-and [MoBY paper](https://arxiv.org/abs/2105.04553):
-```
-@misc{xie2021moby,
-      title={Self-Supervised Learning with Swin Transformers}, 
-      author={Zhenda Xie and Yutong Lin and Zhuliang Yao and Zheng Zhang and Qi Dai and Yue Cao and Han Hu},
-      year={2021},
-      eprint={2105.04553},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2105.04553}, 
-}
-```
+It also contains the implementation of [BYOL](https://arxiv.org/abs/2006.07733) and [MoBY](https://arxiv.org/abs/2105.04553):
 
 ### Preparation
 
