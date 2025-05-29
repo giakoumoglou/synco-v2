@@ -68,7 +68,8 @@ def parse_option():
     config.defrost()
     # base
     config.LINEAR_EVAL.PRETRAINED = os.path.join(config.OUTPUT, 'checkpoint.pth')
-    config.OUTPUT = os.path.join(config.OUTPUT, f'linear_{config.DATA.DATASET}')
+    eval_type = "linprob" if config.LINEAR_EVAL.WEIGHTS == "freeze" else "ft"
+    config.OUTPUT = os.path.join(config.OUTPUT, f'linear_{config.DATA.DATASET}_{eval_type}')
     # model
     config.MODEL.TYPE = 'linear'
     config.MODEL.DROP_PATH_RATE = args.drop_path_rate
@@ -94,6 +95,7 @@ def parse_option():
 
 
 def main(config):    
+    print('Saving under', config.OUTPUT)
     # ================ data ================
     _, dataset_val, data_loader_train, data_loader_val, mixup_fn = build_loader(config)
     if data_loader_train is not None:
@@ -110,14 +112,22 @@ def main(config):
     logger.info(str(model))
     
     # ================ fix parameters ================
-    if config.MODEL.ENCODER.startswith('resnet'):
-        for name, p in model.named_parameters():
-            if 'fc' not in name:
-                p.requires_grad = False
-    else:
-        for name, p in model.named_parameters():
-            if 'head' not in name:
-                p.requires_grad = False
+    if config.LINEAR_EVAL.WEIGHTS == 'freeze':
+        if config.MODEL.ENCODER.startswith('resnet'):
+            for name, p in model.named_parameters():
+                if 'fc' not in name:
+                    p.requires_grad = False
+        else:
+            for name, p in model.named_parameters():
+                if 'head' not in name:
+                    p.requires_grad = False
+    else: # weights == 'finetune'
+        if config.MODEL.ENCODER.startswith('resnet'):
+            for name, p in model.named_parameters():
+                p.requires_grad = True
+        else:
+            for name, p in model.named_parameters():
+                p.requires_grad = True
 
     # ================ optimizer ================
     optimizer = build_optimizer(config, model)

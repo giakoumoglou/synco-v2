@@ -102,6 +102,7 @@ _C.TRAIN.OPTIMIZER.MOMENTUM = 0.9
 # -----------------------------------------------------------------------------
 _C.LINEAR_EVAL = CN()
 _C.LINEAR_EVAL.PRETRAINED = ''
+_C.LINEAR_EVAL.WEIGHTS = 'freeze' # or finetune
 
 # -----------------------------------------------------------------------------
 # Augmentation settings (from default swin training)
@@ -139,7 +140,7 @@ _C.TEST.CROP = True
 _C.AMP_OPT_LEVEL = 'O0'
 _C.OUTPUT = 'output'
 _C.TAG = 'default'
-_C.SAVE_FREQ = 10
+_C.SAVE_FREQ = 100
 _C.PRINT_FREQ = 10
 _C.SEED = 0
 _C.EVAL_MODE = False
