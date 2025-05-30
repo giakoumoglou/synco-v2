@@ -82,13 +82,49 @@ def get_grad_norm(parameters, norm_type=2):
     if isinstance(parameters, torch.Tensor):
         parameters = [parameters]
     parameters = list(filter(lambda p: p.grad is not None, parameters))
+    
+    if not parameters:
+        return 0.0
+        
     norm_type = float(norm_type)
-    total_norm = 0
-    for p in parameters:
-        param_norm = p.grad.data.norm(norm_type)
-        total_norm += param_norm.item() ** norm_type
-    total_norm = total_norm ** (1. / norm_type)
+    
+    if norm_type == float('inf'):
+        # L_inf norm - maximum absolute value
+        total_norm = max(p.grad.data.abs().max().item() for p in parameters)
+    else:
+        # Your original L_2 norm code
+        total_norm = 0
+        for p in parameters:
+            param_norm = p.grad.data.norm(norm_type)
+            total_norm += param_norm.item() ** norm_type
+        total_norm = total_norm ** (1. / norm_type)
+    
     return total_norm
+
+def get_component_parameters(model, component_name):
+    """
+    Extract parameters for a specific component
+    """
+    if hasattr(model, 'module'):
+        model = model.module
+    
+    params = []
+    
+    for name, param in model.named_parameters():
+        if param.grad is not None:
+            if component_name == 'overall':
+                params.append(param)
+            elif component_name == 'encoder' and 'encoder' in name and 'encoder_k' not in name:
+                params.append(param)
+            elif component_name == 'projector' and 'projector' in name and 'projector_k' not in name:
+                params.append(param)
+            elif component_name == 'predictor' and 'predictor' in name:
+                params.append(param)
+            elif component_name == 'head' and ('head' in name or 'classifier' in name):
+                params.append(param)
+    
+    return params
+
 
 
 def auto_resume_helper(output_dir):

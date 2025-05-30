@@ -23,7 +23,7 @@ from datasets import build_loader
 from lr_scheduler import build_scheduler
 from optimizer import build_optimizer
 from logger import create_logger
-from utils import load_checkpoint, save_checkpoint, get_grad_norm, auto_resume_helper, reduce_tensor
+from utils import get_grad_norm, get_component_parameters, load_checkpoint, save_checkpoint, auto_resume_helper, reduce_tensor
 
 try:
     # noinspection PyUnresolvedReferences
@@ -130,7 +130,7 @@ def main(config):
 
 def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
     """
-    One epoch training for self-supervised learning.
+    One epoch training for self-supervised learning with component gradient tracking.
 
     args:
         config (config): config file
@@ -149,6 +149,18 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
     batch_time = AverageMeter()
     loss_meter = AverageMeter()
     norm_meter = AverageMeter()
+    
+    # Overall model gradient average meters
+    model_l2_meter = AverageMeter()
+    model_inf_meter = AverageMeter()
+    
+    # Component gradient average meters
+    encoder_l2_meter = AverageMeter()
+    projector_l2_meter = AverageMeter()
+    predictor_l2_meter = AverageMeter()
+    encoder_inf_meter = AverageMeter()
+    projector_inf_meter = AverageMeter()
+    predictor_inf_meter = AverageMeter()
 
     start = time.time()
     end = time.time()
@@ -169,10 +181,44 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
                 grad_norm = get_grad_norm(amp.master_params(optimizer))
         else:
             loss.backward()
+            
+            # Calculate overall model gradients
+            all_params = get_component_parameters(model, 'overall')
+            model_l2_norm = get_grad_norm(all_params, norm_type=2)
+            model_inf_norm = get_grad_norm(all_params, norm_type=float('inf'))
+            
+            # Calculate component gradients using your existing get_grad_norm function
+            encoder_params = get_component_parameters(model, 'encoder')
+            projector_params = get_component_parameters(model, 'projector')
+            predictor_params = get_component_parameters(model, 'predictor')
+            
+            # L2 norms
+            encoder_l2_norm = get_grad_norm(encoder_params, norm_type=2)
+            projector_l2_norm = get_grad_norm(projector_params, norm_type=2)
+            predictor_l2_norm = get_grad_norm(predictor_params, norm_type=2)
+            
+            # L∞ norms
+            encoder_inf_norm = get_grad_norm(encoder_params, norm_type=float('inf'))
+            projector_inf_norm = get_grad_norm(projector_params, norm_type=float('inf'))
+            predictor_inf_norm = get_grad_norm(predictor_params, norm_type=float('inf'))
+            
+            # Update overall model average meters
+            model_l2_meter.update(model_l2_norm, targets.size(0))
+            model_inf_meter.update(model_inf_norm, targets.size(0))
+            
+            # Update component average meters
+            encoder_l2_meter.update(encoder_l2_norm, targets.size(0))
+            projector_l2_meter.update(projector_l2_norm, targets.size(0))
+            predictor_l2_meter.update(predictor_l2_norm, targets.size(0))
+            encoder_inf_meter.update(encoder_inf_norm, targets.size(0))
+            projector_inf_meter.update(projector_inf_norm, targets.size(0))
+            predictor_inf_meter.update(predictor_inf_norm, targets.size(0))
+            
             if config.TRAIN.CLIP_GRAD:
                 grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), config.TRAIN.CLIP_GRAD)
             else:
                 grad_norm = get_grad_norm(model.parameters())
+        
         optimizer.step()
         lr_scheduler.step_update(epoch * num_steps + idx)
 
@@ -193,7 +239,18 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
                 f'time {batch_time.val:.4f} ({batch_time.avg:.4f})\t'
                 f'loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
                 f'grad_norm {norm_meter.val:.4f} ({norm_meter.avg:.4f})\t'
-                f'mem {memory_used:.0f}MB')
+                f'mem {memory_used:.0f}MB\t'
+                f'[Grad Norms] '
+                f'model_l2 {model_l2_meter.val:.4f} ({model_l2_meter.avg:.4f})\t'
+                f'model_inf {model_inf_meter.val:.6f} ({model_inf_meter.avg:.6f})\t'
+                f'enc_l2 {encoder_l2_meter.val:.4f} ({encoder_l2_meter.avg:.4f})\t'
+                f'proj_l2 {projector_l2_meter.val:.4f} ({projector_l2_meter.avg:.4f})\t'
+                f'pred_l2 {predictor_l2_meter.val:.4f} ({predictor_l2_meter.avg:.4f})\t'
+                f'enc_inf {encoder_inf_meter.val:.6f} ({encoder_inf_meter.avg:.6f})\t'
+                f'proj_inf {projector_inf_meter.val:.6f} ({projector_inf_meter.avg:.6f})\t'
+                f'pred_inf {predictor_inf_meter.val:.6f} ({predictor_inf_meter.avg:.6f})'
+                )
+    
     epoch_time = time.time() - start
     logger.info(f"EPOCH {epoch} training takes {datetime.timedelta(seconds=int(epoch_time))}")
 
