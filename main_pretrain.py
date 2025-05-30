@@ -15,7 +15,7 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
-from timm.utils import AverageMeter
+from timm.utils import accuracy, AverageMeter
 
 from config import get_config
 from models import build_model
@@ -150,11 +150,15 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
     loss_meter = AverageMeter()
     norm_meter = AverageMeter()
     
-    # Overall model gradient average meters
+    # accuracy meters
+    acc1_meter = AverageMeter()
+    acc5_meter = AverageMeter()
+    
+    # overall model gradient average meters
     model_l2_meter = AverageMeter()
     model_inf_meter = AverageMeter()
     
-    # Component gradient average meters
+    # component gradient average meters
     encoder_l2_meter = AverageMeter()
     projector_l2_meter = AverageMeter()
     predictor_l2_meter = AverageMeter()
@@ -169,7 +173,17 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
         samples_2 = samples_2.cuda(non_blocking=True)
         targets = targets.cuda(non_blocking=True)
 
-        loss = model(samples_1, samples_2)
+        model_outputs = model(samples_1, samples_2)
+        
+        if isinstance(model_outputs, (tuple, list)) and len(model_outputs) == 3:
+            loss, output, target = model_outputs
+            acc1, acc5 = accuracy(output, target, topk=(1, 5))
+            acc1_meter.update(acc1.item(), output.size(0))
+            acc5_meter.update(acc5.item(), output.size(0))
+        else:
+            loss = model_outputs
+            acc1_meter.update(float('nan'), targets.size(0))
+            acc5_meter.update(float('nan'), targets.size(0))
 
         optimizer.zero_grad()
         if config.AMP_OPT_LEVEL != "O0":
@@ -182,31 +196,29 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
         else:
             loss.backward()
             
-            # Calculate overall model gradients
+            # calculate overall model gradients
             all_params = get_component_parameters(model, 'overall')
             model_l2_norm = get_grad_norm(all_params, norm_type=2)
             model_inf_norm = get_grad_norm(all_params, norm_type=float('inf'))
             
-            # Calculate component gradients using your existing get_grad_norm function
+            # calculate component gradients using your existing get_grad_norm function
             encoder_params = get_component_parameters(model, 'encoder')
             projector_params = get_component_parameters(model, 'projector')
             predictor_params = get_component_parameters(model, 'predictor')
             
-            # L2 norms
+            # L_2 norms
             encoder_l2_norm = get_grad_norm(encoder_params, norm_type=2)
             projector_l2_norm = get_grad_norm(projector_params, norm_type=2)
             predictor_l2_norm = get_grad_norm(predictor_params, norm_type=2)
             
-            # L∞ norms
+            # L_inf norms
             encoder_inf_norm = get_grad_norm(encoder_params, norm_type=float('inf'))
             projector_inf_norm = get_grad_norm(projector_params, norm_type=float('inf'))
             predictor_inf_norm = get_grad_norm(predictor_params, norm_type=float('inf'))
             
-            # Update overall model average meters
+            # update average meters
             model_l2_meter.update(model_l2_norm, targets.size(0))
             model_inf_meter.update(model_inf_norm, targets.size(0))
-            
-            # Update component average meters
             encoder_l2_meter.update(encoder_l2_norm, targets.size(0))
             projector_l2_meter.update(projector_l2_norm, targets.size(0))
             predictor_l2_meter.update(predictor_l2_norm, targets.size(0))
@@ -240,6 +252,9 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
                 f'loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
                 f'grad_norm {norm_meter.val:.4f} ({norm_meter.avg:.4f})\t'
                 f'mem {memory_used:.0f}MB\t'
+                f'[Unsupervised Acc] '
+                f'acc1 {acc1_meter.val:.2f} ({acc1_meter.avg:.2f})\t'
+                f'acc5 {acc5_meter.val:.2f} ({acc5_meter.avg:.2f})\t'
                 f'[Grad Norms] '
                 f'model_l2 {model_l2_meter.val:.4f} ({model_l2_meter.avg:.4f})\t'
                 f'model_inf {model_inf_meter.val:.6f} ({model_inf_meter.avg:.6f})\t'

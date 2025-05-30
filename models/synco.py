@@ -285,7 +285,7 @@ class SynCo(nn.Module):
         # labels: positive key indicators
         labels = torch.zeros(logits.shape[0], dtype=torch.long).cuda()
 
-        return F.cross_entropy(logits, labels)
+        return F.cross_entropy(logits, labels), logits, labels
 
     def forward(self, im_1, im_2):
         """
@@ -294,6 +294,8 @@ class SynCo(nn.Module):
             im_2: a batch of key images
         Output:
             loss: contrastive loss
+            output: concatenated logits for accuracy calculation
+            target: concatenated labels for accuracy calculation
         """
         # compute query features: NxC
         feat_1 = self.encoder(im_1)
@@ -318,13 +320,19 @@ class SynCo(nn.Module):
             proj_2_ng = self.projector_k(feat_2_ng)
             proj_2_ng = F.normalize(proj_2_ng, dim=1)
 
-        # compute loss
-        loss = self.contrastive_loss(pred_1, proj_2_ng, self.queue2) \
-            + self.contrastive_loss(pred_2, proj_1_ng, self.queue1)
+        # compute loss and logits for accuracy
+        loss_1, logits_1, labels_1 = self.contrastive_loss(pred_1, proj_2_ng, self.queue2)
+        loss_2, logits_2, labels_2 = self.contrastive_loss(pred_2, proj_1_ng, self.queue1)
+        
+        loss = loss_1 + loss_2
+
+        # concatenate outputs for accuracy calculation
+        output = torch.cat([logits_1, logits_2], dim=0)
+        target = torch.cat([labels_1, labels_2], dim=0)
 
         self._dequeue_and_enqueue(proj_1_ng, proj_2_ng)
 
-        return loss
+        return loss, output, target
     
     
 class MLP(nn.Module):
