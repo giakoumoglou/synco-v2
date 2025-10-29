@@ -51,7 +51,6 @@ The scripts expect the following dataset structure:
     └── ...
 ```
 
----
 
 ## Environment Setup
 
@@ -80,8 +79,6 @@ pip install tqdm
 ```
 
 **Note:** These commands set up a complete environment compatible with CUDA 11.7/11.8 and the specific PyTorch version required for this implementation.
-
----
 
 ## Unsupervised Training
 
