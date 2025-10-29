@@ -256,10 +256,10 @@ For **full fine-tuning** instead of linear probing (by default `LINEAR_EVAL.WEIG
 --opts LINEAR_EVAL.WEIGHTS finetune
 ```
 
-## License
+### License
 
-This project is released under the MIT License.
+This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
 
-## Acknowledgments
+### Acknowledgments
 
 This codebase is built upon [MoBY](https://github.com/SwinTransformer/TransformerSSL),[SynCo](https://github.com/giakoumoglou/synco), [DINO](https://github.com/facebookresearch/dino), [Swin Transformer](https://github.com/microsoft/Swin-Transformer). We thank the authors for their excellent work and for making their code publicly available.
