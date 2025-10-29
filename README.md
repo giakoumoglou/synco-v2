@@ -13,7 +13,7 @@ url={https://openreview.net/forum?id=dg8FuaOKnC}
 
 ```
 @inproceedings{giakoumoglou2025syncov2,
-title={SynCo-v2: An Empirical Study of Training Self-Supervised \\Vision Transformers with Synthetic Hard Negatives},
+title={SynCo-v2: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives},
 author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
 year={2025},
 eprint={XXXX.YYYYY},
