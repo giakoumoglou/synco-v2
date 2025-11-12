@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-# --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
-# Modified by Zhenda Xie
-# Modified by Nikolaos Giakoumoglou
-# --------------------------------------------------------
+# Copyright (C) 2025. All rights reserved.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
 
 from functools import partial
 from termcolor import colored
@@ -153,5 +150,6 @@ def build_model(config):
             f"-----> Unknown model_type: {model_type}. "
             f"Only 'byol', 'moby', 'synco', and 'linear' are currently supported."
         )
+
 
     return model
