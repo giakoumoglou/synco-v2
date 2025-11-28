@@ -130,6 +130,35 @@ python -m torch.distributed.launch \
 - `--dump-features [path]`: Save extracted features to avoid recomputation
 - `--load-features [path]`: Load precomputed features
 
+## Results on ImageNet ILSVRC-2012
+
+# Linear and k-NN classification on ImageNet
+
+Results show top-1 and top-5 accuracy (in %) and k-NN accuracy for k=10. All methods do **not** employ multi-crop augmentation for a **fair** comparison.
+
+| Method | Backbone | Epochs | Top-1 | Top-5 | k-NN |
+|--------|----------|--------|-------|-------|------|
+| *Supervised* | DeiT-S | 300 | 79.8 | -- | -- |
+| *Supervised* | Swin-T | 300 | 81.3 | -- | -- |
+| SimCLR | DeiT-S | 300 | 69.0 | -- | -- |
+| MoCo-v2 | DeiT-S | 300 | 71.4 | -- | -- |
+| SwAV | DeiT-S | 300 | 67.1 | -- | -- |
+| MoCo-v3 | DeiT-S | 300 | 72.5 | -- | -- |
+| DINO | DeiT-S | 300 | 72.5 | -- | 67.9 |
+| BeiT | DeiT-S | 300 | 15.7 | -- | -- |
+| CAE | DeiT-S | 300 | 51.8 | -- | -- |
+| SiMIM | Swin-T | 100 | 56.0 | -- | -- |
+| SMoG | Swin-T | 400 | 74.5 | -- | -- |
+| BYOL | DeiT-S | 300 | 71.0 | -- | -- |
+| MoBY | DeiT-S | 300 | 72.8 | -- | -- |
+| MoBY | Swin-T | 300 | 75.0 | -- | -- |
+| BYOL (*repr.*) | DeiT-S | 300 | 70.3 | 91.0 | 62.5 |
+| BYOL (*repr.*) | Swin-T | 300 | 68.5 | 89.4 | 58.0 |
+| MoBY (*repr.*) | DeiT-S | 300 | 72.3 | 88.3 | 64.3 |
+| MoBY (*repr.*) | Swin-T | 300 | 74.7 | 92.7 | 67.8 |
+| **SynCo-v2 (ours)** | **DeiT-S** | **300** | **73.1** | **91.4** | **71.0** |
+| **SynCo-v2 (ours)** | **Swin-T** | **300** | **75.4** | **93.1** | **69.3** |
+
 
 ## Image Retrieval
 
