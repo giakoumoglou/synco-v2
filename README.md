@@ -134,7 +134,7 @@ python -m torch.distributed.launch \
 
 # Linear and k-NN classification on ImageNet
 
-Results show top-1 and top-5 accuracy (in %) and k-NN accuracy for k=10. All methods do **not** employ multi-crop augmentation for a **fair** comparison.
+Benchmark results of our framework. We show top-1 and top-5 accuracy (in %) and k-NN accuracy for k=10. 
 
 | Method | Backbone | Epochs | Top-1 | Top-5 | k-NN |
 |--------|----------|--------|-------|-------|------|
