@@ -1,5 +1,7 @@
 ## _SynCo_-v2: Unsupervised Training of Vision Transformers with Synthetic Negatives
 
+<img width="1173" height="376" alt="image" src="https://github.com/user-attachments/assets/67e49f69-51e4-438b-a284-77e970dab956" />
+
 This is a PyTorch implementation of the [SynCo-v2 paper](https://arxiv.org/abs/XXXX.YYYYY):
 ```
 @inproceedings{giakoumoglou2025unsupervised,
