@@ -138,20 +138,6 @@ Results show top-1 and top-5 accuracy (in %) and k-NN accuracy for k=10. All met
 
 | Method | Backbone | Epochs | Top-1 | Top-5 | k-NN |
 |--------|----------|--------|-------|-------|------|
-| *Supervised* | DeiT-S | 300 | 79.8 | -- | -- |
-| *Supervised* | Swin-T | 300 | 81.3 | -- | -- |
-| SimCLR | DeiT-S | 300 | 69.0 | -- | -- |
-| MoCo-v2 | DeiT-S | 300 | 71.4 | -- | -- |
-| SwAV | DeiT-S | 300 | 67.1 | -- | -- |
-| MoCo-v3 | DeiT-S | 300 | 72.5 | -- | -- |
-| DINO | DeiT-S | 300 | 72.5 | -- | 67.9 |
-| BeiT | DeiT-S | 300 | 15.7 | -- | -- |
-| CAE | DeiT-S | 300 | 51.8 | -- | -- |
-| SiMIM | Swin-T | 100 | 56.0 | -- | -- |
-| SMoG | Swin-T | 400 | 74.5 | -- | -- |
-| BYOL | DeiT-S | 300 | 71.0 | -- | -- |
-| MoBY | DeiT-S | 300 | 72.8 | -- | -- |
-| MoBY | Swin-T | 300 | 75.0 | -- | -- |
 | BYOL (*repr.*) | DeiT-S | 300 | 70.3 | 91.0 | 62.5 |
 | BYOL (*repr.*) | Swin-T | 300 | 68.5 | 89.4 | 58.0 |
 | MoBY (*repr.*) | DeiT-S | 300 | 72.3 | 88.3 | 64.3 |
