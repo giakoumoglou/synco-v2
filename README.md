@@ -132,8 +132,6 @@ python -m torch.distributed.launch \
 
 ## Results on ImageNet ILSVRC-2012
 
-# Linear and k-NN classification on ImageNet
-
 Benchmark results of our framework. We show top-1 and top-5 accuracy (in %) and k-NN accuracy for k=10. 
 
 | Method | Backbone | Epochs | Top-1 | Top-5 | k-NN |
