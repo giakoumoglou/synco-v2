@@ -15,11 +15,13 @@ url={https://openreview.net/forum?id=dg8FuaOKnC}
 
 and the full version:
 
+```
 @misc{giakoumoglou2025syncov2,
       title={{SynCo-v2: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives}}, 
       author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
       year={2025},
 }
+```
 
 It also contains the implementation of [BYOL](https://arxiv.org/abs/2006.07733) and [MoBY](https://arxiv.org/abs/2105.04553).
 
