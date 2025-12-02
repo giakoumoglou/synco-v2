@@ -2,7 +2,7 @@
 
 <img width="1173" height="376" alt="image" src="https://github.com/user-attachments/assets/67e49f69-51e4-438b-a284-77e970dab956" />
 
-This is a PyTorch implementation of the [SynCo-v2 paper](https://arxiv.org/abs/XXXX.YYYYY):
+This is a PyTorch implementation of the [SynCo-v2 paper]([https://arxiv.org/abs/XXXX.YYYYY](https://github.com/user-attachments/assets/67e49f69-51e4-438b-a284-77e970dab956)):
 ```
 @inproceedings{giakoumoglou2025unsupervised,
 title={Unsupervised Training of Vision Transformers with Synthetic Negatives},
@@ -13,7 +13,7 @@ url={https://openreview.net/forum?id=dg8FuaOKnC}
 }
 ```
 
-and the full version:
+and the full version of [SynCo-v2](https://giakoumoglou.com/src/syncov2/syncov2-main.pdf), currently available at [giakoumoglou.com](giakoumoglou.com):
 
 ```
 @misc{giakoumoglou2025syncov2,
