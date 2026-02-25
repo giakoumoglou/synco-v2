@@ -110,4 +110,4 @@ This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for detai
 
 ### Acknowledgments
 
-This codebase is built upon [MoBY](https://github.com/SwinTransformer/TransformerSSL),[SynCo](https://github.com/giakoumoglou/synco), [DINO](https://github.com/facebookresearch/dino), [Swin Transformer](https://github.com/microsoft/Swin-Transformer). We thank the authors for their excellent work and for making their code publicly available.
+This codebase is built upon [MoBY](https://github.com/SwinTransformer/TransformerSSL), [SynCo](https://github.com/giakoumoglou/synco), [DINO](https://github.com/facebookresearch/dino), [Swin Transformer](https://github.com/microsoft/Swin-Transformer). We thank the authors for their excellent work and for making their code publicly available.
