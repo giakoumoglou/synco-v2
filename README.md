@@ -7,7 +7,6 @@ This is a PyTorch implementation of the [SynCo-v2 paper](https://giakoumoglou.co
 @misc{giakoumoglou2025syncov2,
       title={{SynCo-v2: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives}}, 
       author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
-      booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Findings Workshop},
       year={2026}
 }
 ```
