@@ -1,4 +1,4 @@
-## _SynCo_-v2: An Empirical Study of Training Self-Supervised \\Vision Transformers with Synthetic Hard Negatives
+## _SynCo_-v2: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives
 
 <img width="1173" height="376" alt="image" src="https://github.com/user-attachments/assets/67e49f69-51e4-438b-a284-77e970dab956" />
 
