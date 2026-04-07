@@ -1,5 +1,5 @@
 # --------------------------------------------------------
-# BYOL: A New Approach to Self-Supervised Learning
+# BYOL: Bootstrap Your Own Latent
 # Copyright (c) 2025 Imperial College London
 # Licensed under The MIT License
 # Written by Nikolaos Giakoumoglou
