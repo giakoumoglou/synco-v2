@@ -21,8 +21,7 @@ python -m torch.distributed.launch \
     --data-path $DATA_PATH \
     --batch-size 128 \
     --output $OUTPUT_DIR \
-    --tag $TAG \
-    --opts MODEL.ONLINE_DROP_PATH_RATE 0.1 MODEL.TARGET_DROP_PATH_RATE 0.1
+    --tag $TAG
 
 python -m torch.distributed.launch \
     --nproc_per_node=4 \
