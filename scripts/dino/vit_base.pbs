@@ -1,13 +1,13 @@
 #!/bin/bash
+#PBS -N dino_vitb
 #PBS -lselect=1:ncpus=16:mem=256gb:ngpus=8
 #PBS -lwalltime=72:00:00
 
 cd $PBS_O_WORKDIR
-cd ..
 
 MASTER_PORT=$((10000 + RANDOM % 50000))
 DATA_PATH="$HOME/datasets/imagenet/"
-OUTPUT_DIR="./output/"
+OUTPUT_DIR="./logs/"
 TAG="default"
 
 source $HOME/anaconda3/bin/activate
@@ -17,17 +17,17 @@ python -m torch.distributed.launch \
     --nproc_per_node=8 \
     --master_port=$MASTER_PORT \
     main_pretrain.py \
-    --cfg configs/vitamins/vit_base.yaml \
+    --cfg configs/dino/vit_base.yaml \
     --data-path $DATA_PATH \
     --batch-size 64 \
     --output $OUTPUT_DIR \
-    --tag $TAG \
+    --tag $TAG
 
 python -m torch.distributed.launch \
     --nproc_per_node=8 \
     --master_port=$MASTER_PORT \
     main_linear.py \
-    --cfg configs/vitamins/vit_base.yaml \
+    --cfg configs/dino/vit_base.yaml \
     --data-path $DATA_PATH \
     --output $OUTPUT_DIR \
-    --tag $TAG \
+    --tag $TAG

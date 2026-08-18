@@ -52,7 +52,9 @@ The scripts expect the following dataset structure:
 │   ├── moby/                   # swin_tiny, swin_small, swin_base, vit_small, vit_base
 │   ├── dino/                   # swin_tiny, swin_small, swin_base, vit_small, vit_base
 │   └── vitamins/               # swin_tiny, swin_small, swin_base, vit_small, vit_base
-├── scripts/                    # PBS job scripts
+├── scripts/                    # PBS job scripts, one folder per method
+│   ├── byol/ moby/ dino/ vitamins/    …/{swin_tiny,swin_small,swin_base,vit_small,vit_base}.pbs
+│   └── extract_ILSVRC2012.sh
 └── src/
     ├── config.py               # default config and yaml merging
     ├── logger.py
@@ -105,6 +107,16 @@ python -m torch.distributed.launch \
 ```
 
 To use BYOL, MoBY or DINO instead, swap the config file accordingly, e.g. `--cfg configs/dino/vit_base.yaml`.
+
+### Submitting on PBS
+
+Ready-made job scripts are provided for every method and architecture. Submit them **from the repository root**, since each script does `cd $PBS_O_WORKDIR`:
+
+```bash
+qsub scripts/vitamins/vit_base.pbs
+```
+
+Each script runs pre-training followed by linear evaluation, writes to `./logs/`, and requests the GPU count matching its architecture (4 GPUs at batch 128, or 8 GPUs at batch 64, for a total batch of 512 either way).
 
 ## Linear Classification
 

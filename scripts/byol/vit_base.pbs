@@ -1,33 +1,33 @@
 #!/bin/bash
-#PBS -lselect=1:ncpus=16:mem=128gb:ngpus=4
+#PBS -N byol_vitb
+#PBS -lselect=1:ncpus=16:mem=256gb:ngpus=8
 #PBS -lwalltime=72:00:00
 
 cd $PBS_O_WORKDIR
-cd ..
 
 MASTER_PORT=$((10000 + RANDOM % 50000))
 DATA_PATH="$HOME/datasets/imagenet/"
-OUTPUT_DIR="./output/"
+OUTPUT_DIR="./logs/"
 TAG="default"
 
 source $HOME/anaconda3/bin/activate
 source activate vitamins
 
 python -m torch.distributed.launch \
-    --nproc_per_node=4 \
+    --nproc_per_node=8 \
     --master_port=$MASTER_PORT \
     main_pretrain.py \
-    --cfg configs/moby/vit_small.yaml \
+    --cfg configs/byol/vit_base.yaml \
     --data-path $DATA_PATH \
-    --batch-size 128 \
+    --batch-size 64 \
     --output $OUTPUT_DIR \
     --tag $TAG
 
 python -m torch.distributed.launch \
-    --nproc_per_node=4 \
+    --nproc_per_node=8 \
     --master_port=$MASTER_PORT \
     main_linear.py \
-    --cfg configs/moby/vit_small.yaml \
+    --cfg configs/byol/vit_base.yaml \
     --data-path $DATA_PATH \
     --output $OUTPUT_DIR \
     --tag $TAG
