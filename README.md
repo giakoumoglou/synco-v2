@@ -1,6 +1,8 @@
 ## _ViTAMINS_: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives
 
-<img width="1173" height="376" alt="image" src="https://i.postimg.cc/xj6Dvq0j/teaser-vitamins.png" />
+<div align="center">
+  <img width="1000" height="376" alt="image" src="https://i.postimg.cc/xj6Dvq0j/teaser-vitamins.png" />
+</div>
 
 This is a PyTorch implementation of the [ViTAMINS paper](https://arxiv.org/abs/TO.DO), accepted at **WACV 2027**:
 ```
