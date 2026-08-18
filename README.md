@@ -2,7 +2,7 @@
 
 <img width="1173" height="376" alt="image" src="https://i.postimg.cc/xj6Dvq0j/teaser-vitamins.png" />
 
-This is a PyTorch implementation of the [ViTAMINS paper](https://giakoumoglou.com/src/vitamins/vitamins-main.pdf), accepted at **WACV 2027**:
+This is a PyTorch implementation of the [ViTAMINS paper](https://arxiv.org/abs/TO.DO), accepted at **WACV 2027**:
 ```
 @inproceedings{giakoumoglou2027vitamins,
       title={{ViTAMINS: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives}}, 
