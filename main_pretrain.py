@@ -16,13 +16,13 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 from timm.utils import accuracy, AverageMeter
 
-from config import get_config
-from models import build_model
-from datasets import build_loader
-from lr_scheduler import build_scheduler
-from optimizer import build_optimizer
-from logger import create_logger
-from utils import get_grad_norm, get_component_parameters, load_checkpoint, save_checkpoint, auto_resume_helper, reduce_tensor
+from src.config import get_config
+from src.models import build_model
+from src.datasets import build_loader
+from src.lr_scheduler import build_scheduler
+from src.optimizer import build_optimizer
+from src.logger import create_logger
+from src.utils import get_grad_norm, get_component_parameters, load_checkpoint, save_checkpoint, auto_resume_helper, reduce_tensor
 
 try:
     # noinspection PyUnresolvedReferences

@@ -17,7 +17,7 @@ from .vitamins import ViTAMINS
 from timm.models import resnet50, resnet101, resnet152, resnet200
 
 # custom vision transformer imports
-from .vision_transformer import (
+from .backbones.vision_transformer import (
     vit_small_patch16_224, 
     vit_base_patch16_224,
     vit_large_patch16_224, 
@@ -25,7 +25,7 @@ from .vision_transformer import (
 )
 
 # custom swin transformer imports
-from .swin_transformer import (
+from .backbones.swin_transformer import (
     swin_tiny_patch4_window7_224, 
     swin_small_patch4_window7_224,
     swin_base_patch4_window7_224, 

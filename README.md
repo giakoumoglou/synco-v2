@@ -41,6 +41,34 @@ The scripts expect the following dataset structure:
 ```
 
 
+## Code Structure
+
+```
+.
+├── main_pretrain.py            # entrypoint: unsupervised pre-training
+├── main_linear.py              # entrypoint: linear probing / fine-tuning
+├── configs/                    # one folder per method, one file per architecture
+│   ├── byol/                   # swin_tiny, swin_small, swin_base, vit_small, vit_base
+│   ├── moby/                   # swin_tiny, swin_small, swin_base, vit_small, vit_base
+│   ├── dino/                   # swin_tiny, swin_small, swin_base, vit_small, vit_base
+│   └── vitamins/               # swin_tiny, swin_small, swin_base, vit_small, vit_base
+├── scripts/                    # PBS job scripts
+└── src/
+    ├── config.py               # default config and yaml merging
+    ├── logger.py
+    ├── lr_scheduler.py
+    ├── optimizer.py
+    ├── utils.py
+    ├── datasets/               # data loading, ssl augmentations, transfer datasets
+    └── models/
+        ├── build.py            # model factory
+        ├── byol.py
+        ├── moby.py
+        ├── dino.py
+        ├── vitamins.py
+        └── backbones/          # vision transformer and swin transformer
+```
+
 ## Environment Setup
 
 To set up a compatible environment (CUDA 11.7/11.8) on [PBS](https://en.wikipedia.org/wiki/Portable_Batch_System), follow these steps:
@@ -74,16 +102,6 @@ python -m torch.distributed.launch \
     --batch-size 64 \
     --output [output folder] \
     --tag [tag folder]
-```
-
-Configs are grouped by method, one folder per method and one file per architecture:
-
-```
-configs/
-├── byol/       # swin_tiny, swin_small, swin_base, vit_small, vit_base
-├── moby/       # swin_tiny, swin_small, swin_base, vit_small, vit_base
-├── dino/       # swin_tiny, swin_small, swin_base, vit_small, vit_base
-└── vitamins/   # swin_tiny, swin_small, swin_base, vit_small, vit_base
 ```
 
 To use BYOL, MoBY or DINO instead, swap the config file accordingly, e.g. `--cfg configs/dino/vit_base.yaml`.
