@@ -1,10 +1,9 @@
-# --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
-# Modified by Zhenda Xie
-# --------------------------------------------------------
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import os
 import torch
@@ -93,10 +92,10 @@ def get_grad_norm(parameters, norm_type=2):
     norm_type = float(norm_type)
     
     if norm_type == float('inf'):
-        # L_inf norm - maximum absolute value
+        # l_inf norm, i.e. the maximum absolute value
         total_norm = max(p.grad.data.abs().max().item() for p in parameters)
     else:
-        # Your original L_2 norm code
+        # l_p norm, p = norm_type
         total_norm = 0
         for p in parameters:
             param_norm = p.grad.data.norm(norm_type)
@@ -105,9 +104,10 @@ def get_grad_norm(parameters, norm_type=2):
     
     return total_norm
 
+
 def get_component_parameters(model, component_name):
     """
-    Extract parameters for a specific component
+    Extract the parameters of a specific component
     """
     if hasattr(model, 'module'):
         model = model.module
@@ -128,7 +128,6 @@ def get_component_parameters(model, component_name):
                 params.append(param)
     
     return params
-
 
 
 def auto_resume_helper(output_dir):

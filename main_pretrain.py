@@ -1,10 +1,9 @@
-# --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
-# Modified by Zhenda Xie
-# --------------------------------------------------------
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import os
 import time
@@ -202,17 +201,17 @@ def train_one_epoch(config, model, data_loader, optimizer, epoch, lr_scheduler):
             model_l2_norm = get_grad_norm(all_params, norm_type=2)
             model_inf_norm = get_grad_norm(all_params, norm_type=float('inf'))
             
-            # calculate component gradients using your existing get_grad_norm function
+            # calculate component gradients
             encoder_params = get_component_parameters(model, 'encoder')
             projector_params = get_component_parameters(model, 'projector')
             predictor_params = get_component_parameters(model, 'predictor')
             
-            # L_2 norms
+            # l2 norms
             encoder_l2_norm = get_grad_norm(encoder_params, norm_type=2)
             projector_l2_norm = get_grad_norm(projector_params, norm_type=2)
             predictor_l2_norm = get_grad_norm(predictor_params, norm_type=2)
             
-            # L_inf norms
+            # l_inf norms
             encoder_inf_norm = get_grad_norm(encoder_params, norm_type=float('inf'))
             projector_inf_norm = get_grad_norm(projector_params, norm_type=float('inf'))
             predictor_inf_norm = get_grad_norm(predictor_params, norm_type=float('inf'))

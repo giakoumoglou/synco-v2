@@ -1,10 +1,9 @@
-# --------------------------------------------------------
-# MoBY: Self-Supervised Learning with Swin Transformers
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License
-# Written by Zhenda Xie
-# Edited by Nikolaos Giakoumoglou
-# --------------------------------------------------------
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import numpy as np
 

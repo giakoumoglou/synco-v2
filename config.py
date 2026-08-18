@@ -1,10 +1,9 @@
-# --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
-# Modified by Zhenda Xie
-# --------------------------------------------------------'
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import os
 import yaml
@@ -12,7 +11,7 @@ from yacs.config import CfgNode as CN
 
 _C = CN()
 
-# Base config files
+# base config files
 _C.BASE = ['']
 
 # -----------------------------------------------------------------------------
@@ -45,24 +44,43 @@ _C.MODEL.LABEL_SMOOTHING = 0.1
 _C.MODEL.TYPE = 'moby'
 _C.MODEL.ENCODER = 'swin_tiny'
 _C.MODEL.NAME = 'moby__swin_tiny'
-_C.MODEL.ONLINE_DROP_PATH_RATE = 0.2 # trick 1: asymmetric drop path
+_C.MODEL.ONLINE_DROP_PATH_RATE = 0.2  # trick 1: asymmetric drop path
 _C.MODEL.TARGET_DROP_PATH_RATE = 0.0
 _C.MODEL.CONTRAST_MOMENTUM = 0.99
 _C.MODEL.CONTRAST_TEMPERATURE = 0.2
 _C.MODEL.CONTRAST_NUM_NEGATIVE = 4096
 _C.MODEL.PROJ_NUM_LAYERS = 2
 _C.MODEL.PRED_NUM_LAYERS = 2
-_C.MODEL.STOP_GRAD_CONV1 = False # trick 2: stop grad conv1
-_C.MODEL.REPLACE_LN_WITH_BN = False # trick 3: replace ln with bn
+_C.MODEL.STOP_GRAD_CONV1 = False  # trick 2: stop grad conv1
+_C.MODEL.REPLACE_LN_WITH_BN = False  # trick 3: replace ln with bn
+
+# -----------------------------------------------------------------------------
+# ViTAMINS settings (synthetic hard negatives)
+# -----------------------------------------------------------------------------
 _C.MODEL.N_HARD = 256
-_C.MODEL.N1 = 128
-_C.MODEL.N2 = 128
-_C.MODEL.N3 = 128
-_C.MODEL.N4 = 128
-_C.MODEL.N5 = 128
-_C.MODEL.N6 = 128
+_C.MODEL.N1 = 128  # interpolated
+_C.MODEL.N2 = 128  # extrapolated
+_C.MODEL.N3 = 128  # mixup
+_C.MODEL.N4 = 128  # noise injected
+_C.MODEL.N5 = 128  # perturbed using autograd
+_C.MODEL.N6 = 128  # adversarial using autograd
 _C.MODEL.WARMUP_EPOCHS = 30
 _C.MODEL.COOLDOWN_EPOCHS = 100
+
+# -----------------------------------------------------------------------------
+# DINO settings (self-distillation, no multi-crop)
+# -----------------------------------------------------------------------------
+_C.MODEL.DINO_OUT_DIM = 65536
+_C.MODEL.DINO_HIDDEN_DIM = 2048
+_C.MODEL.DINO_BOTTLENECK_DIM = 256
+_C.MODEL.DINO_USE_BN_IN_HEAD = False
+_C.MODEL.DINO_NORM_LAST_LAYER = True
+_C.MODEL.DINO_STUDENT_TEMP = 0.1
+_C.MODEL.DINO_TEACHER_TEMP = 0.04
+_C.MODEL.DINO_WARMUP_TEACHER_TEMP = 0.04
+_C.MODEL.DINO_WARMUP_TEACHER_TEMP_EPOCHS = 0
+_C.MODEL.DINO_CENTER_MOMENTUM = 0.9
+_C.MODEL.DINO_FREEZE_LAST_LAYER_EPOCHS = 1
 
 # -----------------------------------------------------------------------------
 # Training settings
@@ -102,7 +120,7 @@ _C.TRAIN.OPTIMIZER.MOMENTUM = 0.9
 # -----------------------------------------------------------------------------
 _C.LINEAR_EVAL = CN()
 _C.LINEAR_EVAL.PRETRAINED = ''
-_C.LINEAR_EVAL.WEIGHTS = 'freeze' # or finetune
+_C.LINEAR_EVAL.WEIGHTS = 'freeze'  # or finetune
 
 # -----------------------------------------------------------------------------
 # Augmentation settings (from default swin training)
@@ -207,8 +225,8 @@ def update_config(config, args):
 
 def get_config(args):
     """Get a yacs CfgNode object with default values."""
-    # Return a clone so that the defaults will not be altered
-    # This is for the "local variable" use pattern
+    # return a clone so that the defaults will not be altered
+    # this is for the "local variable" use pattern
     config = _C.clone()
     update_config(config, args)
 

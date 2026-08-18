@@ -11,13 +11,13 @@ OUTPUT_DIR="./output/"
 TAG="default"
 
 source $HOME/anaconda3/bin/activate
-source activate syncov2
+source activate vitamins
 
 python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=$MASTER_PORT \
     main_pretrain.py \
-    --cfg configs/byol_swin_tiny.yaml \
+    --cfg configs/byol/swin_tiny.yaml \
     --data-path $DATA_PATH \
     --batch-size 128 \
     --gradient-accumulation-steps 8 \
@@ -28,7 +28,7 @@ python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=$MASTER_PORT \
     main_linear.py \
-    --cfg configs/byol_swin_tiny.yaml \
+    --cfg configs/byol/swin_tiny.yaml \
     --data-path $DATA_PATH \
     --output $OUTPUT_DIR \
     --tag $TAG

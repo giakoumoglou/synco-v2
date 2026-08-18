@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -lselect=1:ncpus=16:mem=128gb:ngpus=4
+#PBS -lselect=1:ncpus=16:mem=256gb:ngpus=8
 #PBS -lwalltime=72:00:00
 
 cd $PBS_O_WORKDIR
@@ -11,23 +11,23 @@ OUTPUT_DIR="./output/"
 TAG="default"
 
 source $HOME/anaconda3/bin/activate
-source activate syncov2
+source activate vitamins
 
 python -m torch.distributed.launch \
-    --nproc_per_node=4 \
+    --nproc_per_node=8 \
     --master_port=$MASTER_PORT \
     main_pretrain.py \
-    --cfg configs/synco_swin_tiny.yaml \
+    --cfg configs/vitamins/vit_base.yaml \
     --data-path $DATA_PATH \
-    --batch-size 128 \
+    --batch-size 64 \
     --output $OUTPUT_DIR \
-    --tag $TAG
+    --tag $TAG \
 
 python -m torch.distributed.launch \
-    --nproc_per_node=4 \
+    --nproc_per_node=8 \
     --master_port=$MASTER_PORT \
     main_linear.py \
-    --cfg configs/synco_swin_tiny.yaml \
+    --cfg configs/vitamins/vit_base.yaml \
     --data-path $DATA_PATH \
     --output $OUTPUT_DIR \
-    --tag $TAG
+    --tag $TAG \

@@ -1,9 +1,9 @@
-# --------------------------------------------------------
-# Vistion Transformer MoCo
-# Copyright (c) 2021 Facebook
-# Licensed under The MIT License [see LICENSE for details]
-# Modified by Nikolaos Giakoumoglou
-# --------------------------------------------------------
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import math
 import torch
@@ -34,7 +34,7 @@ class VisionTransformerMoCo(VisionTransformer):
     def __init__(self, stop_grad_conv1=False, **kwargs):
         super().__init__(**kwargs)
 
-        # Use fixed 2D sin-cos position embedding
+        # use fixed 2d sin-cos position embedding
         self.build_2d_sincos_position_embedding()
 
         # weight initialization

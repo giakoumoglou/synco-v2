@@ -1,9 +1,9 @@
-# --------------------------------------------------------
-# SynCo: Synthetic Hard Negatives in Contrastive Learning
-# Copyright (c) 2025 Imperial College London
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Nikolaos Giakoumoglou
-# --------------------------------------------------------
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import numpy as np
 
@@ -15,7 +15,7 @@ import torch.distributed as dist
 from diffdist import functional
 
 
-class SynCo(nn.Module):
+class ViTAMINS(nn.Module):
     def __init__(self,
                  cfg,
                  encoder,
@@ -25,13 +25,13 @@ class SynCo(nn.Module):
                  contrast_num_negative=4096,
                  proj_num_layers=2,
                  pred_num_layers=2,
-                 n_hard=1024, 
+                 n_hard=256, 
                  n1=128, 
                  n2=128, 
                  n3=128, 
-                 n4=64, 
-                 n5=64, 
-                 n6=64,
+                 n4=128, 
+                 n5=128, 
+                 n6=128,
                  warmup_epochs=10,
                  cooldown_epochs=100,
                  **kwargs):
@@ -80,7 +80,7 @@ class SynCo(nn.Module):
 
         self.register_buffer("queue_ptr", torch.zeros(1, dtype=torch.long))
 
-        # synco: https://arxiv.org/abs/2410.02401
+        # vitamins: synthetic hard negatives, see https://arxiv.org/abs/2410.02401
         self.hard_alpha = 0.5
         self.hard_beta = 1.5
         self.hard_gamma = 1
@@ -93,16 +93,16 @@ class SynCo(nn.Module):
         self.n1 = n1
         self.n2 = n2
         self.n3 = n3
-        self.n5 = n5
         self.n4 = n4
+        self.n5 = n5
         self.n6 = n6
         self.use_type1 = n1 > 0
         self.use_type2 = n2 > 0
         self.use_type3 = n3 > 0
-        self.use_type5 = n4 > 0
-        self.use_type4 = n5 > 0
+        self.use_type4 = n4 > 0
+        self.use_type5 = n5 > 0
         self.use_type6 = n6 > 0
-        assert n_hard >= max(n1, n2, n3, n5, n4, n6), "n_hard should be greater than all n"
+        assert n_hard >= max(n1, n2, n3, n4, n5, n6), "n_hard should be greater than all n"
 
     @torch.no_grad()
     def _momentum_update_key_encoder(self):
@@ -137,69 +137,63 @@ class SynCo(nn.Module):
         self.queue_ptr[0] = ptr
     
     def find_hard_negatives(self, logits):
-        """ 
-        Find top-N hard negatives from queue
+        """
+        Find the top-N hard negatives in the queue
         """
         _, idxs_hard = torch.topk(logits.clone().detach(), k=self.n_hard, dim=-1, sorted=False)
         return idxs_hard
 
     def hard_negatives_interpolation(self, q, queue, idxs_hard):
         """
-        Type 1 hard negatives: interpolated
-        s = a * q + (1-a) * n
+        Type 1 hard negatives: interpolated, s = a * q + (1 - a) * n
         """
         batch_size, device = q.shape[0], q.device
         idxs = torch.randint(0, self.n_hard, size=(batch_size, self.n1), device=device)
         alpha = torch.rand(size=(batch_size, self.n1, 1), device=device) * self.hard_alpha 
         hard_negatives = queue.T[torch.gather(idxs_hard, dim=1, index=idxs)].clone().detach()
         hard_negatives = alpha * q.clone().detach()[:, None] + (1 - alpha) * hard_negatives
-        return nn.functional.normalize(hard_negatives, dim=-1).detach()
+        return F.normalize(hard_negatives, dim=-1).detach()
 
     def hard_negatives_extrapolation(self, q, queue, idxs_hard):
         """
-        Type 2 hard negatives: extrapolated
-        s = n + b * (n - q)
+        Type 2 hard negatives: extrapolated, s = q + b * (n - q)
         """
         batch_size, device = q.shape[0], q.device
         idxs = torch.randint(0, self.n_hard, size=(batch_size, self.n2), device=device)
         beta = 1 + torch.rand(size=(batch_size, self.n2, 1), device=device) * (self.hard_beta - 1)
         hard_negatives = queue.T[torch.gather(idxs_hard, dim=1, index=idxs)].clone().detach()
         hard_negatives = q.clone().detach()[:, None] + beta * (hard_negatives - q.clone().detach()[:, None])
-        return nn.functional.normalize(hard_negatives, dim=-1).detach()
+        return F.normalize(hard_negatives, dim=-1).detach()
     
     def hard_negatives_mixup(self, q, queue, idxs_hard):
         """
-        Type 3 hard negatives: mixup
-        s = g * n1 + (1-g) * n2
+        Type 3 hard negatives: mixup, s = g * n1 + (1 - g) * n2
         """
-        batch_size, device = q.shape[0], q.device
         batch_size, device = q.shape[0], q.device
         idxs1, idxs2 = torch.randint(0, self.n_hard, size=(2, batch_size, self.n3), device=device)
         gamma = torch.rand(size=(batch_size, self.n3, 1), device=device) * self.hard_gamma
         hard_negatives1 = queue.T[torch.gather(idxs_hard, dim=1, index=idxs1)].clone().detach()
         hard_negatives2 = queue.T[torch.gather(idxs_hard, dim=1, index=idxs2)].clone().detach()
         neg_hard = gamma * hard_negatives1 + (1 - gamma) * hard_negatives2
-        return nn.functional.normalize(neg_hard, dim=-1).detach()
+        return F.normalize(neg_hard, dim=-1).detach()
     
     def hard_negatives_noise_inject(self, q, queue, idxs_hard):
         """
-        Type 4 hard negatives: noise injected
-        s = n + N(0, var)
+        Type 4 hard negatives: noise injected, s = n + N(0, sigma)
         """
         batch_size, device = q.shape[0], q.device
         idxs = torch.randint(0, self.n_hard, size=(batch_size, self.n4), device=device)
         hard_negatives = queue.T[torch.gather(idxs_hard, dim=1, index=idxs)].clone().detach()
         noise = torch.randn_like(hard_negatives) * self.sigma
-        return nn.functional.normalize(hard_negatives + noise, dim=-1).detach()
+        return F.normalize(hard_negatives + noise, dim=-1).detach()
         
     def hard_negatives_autograd_1(self, q, queue, idxs_hard):
         """
-        Type 5 hard negatives: perturbed using autograd
-        s = n + d * grad(q, n)
+        Type 5 hard negatives: perturbed using autograd, s = n + d * grad(q, n)
         """
         batch_size, device = q.shape[0], q.device
         idxs = torch.randint(0, self.n_hard, size=(batch_size, self.n5), device=device)
-        hard_negatives = queue.T[idxs_hard[torch.arange(batch_size).unsqueeze(1), idxs]].detach().clone()
+        hard_negatives = queue.T[torch.gather(idxs_hard, dim=1, index=idxs)].clone().detach()
         hard_negatives_list = []
         for i in range(hard_negatives.size(1)):
             neighbor = hard_negatives[:, i, :].detach().clone().requires_grad_(True)
@@ -209,16 +203,15 @@ class SynCo(nn.Module):
             hard_negatives_list.append(perturbed_neighbor.detach())
         
         hard_negatives_final = torch.stack(hard_negatives_list, dim=1)
-        return nn.functional.normalize(hard_negatives_final, dim=-1).detach()
+        return F.normalize(hard_negatives_final, dim=-1).detach()
 
     def hard_negatives_autograd_2(self, q, queue, idxs_hard):
         """
-        Type 6 hard negatives: adversarial using autograd
-        s = n + e * sgn(grad(q, n))
+        Type 6 hard negatives: adversarial using autograd, s = n + e * sgn(grad(q, n))
         """
         batch_size, device = q.shape[0], q.device
         idxs = torch.randint(0, self.n_hard, size=(batch_size, self.n6), device=device)
-        hard_negatives = queue.T[idxs_hard[torch.arange(batch_size).unsqueeze(1), idxs]].clone().detach()
+        hard_negatives = queue.T[torch.gather(idxs_hard, dim=1, index=idxs)].clone().detach()
         hard_negatives_list = []
         for i in range(hard_negatives.size(1)):
             neighbor = hard_negatives[:, i, :].detach().clone().requires_grad_(True)
@@ -227,7 +220,7 @@ class SynCo(nn.Module):
             perturbed_neighbor = neighbor + self.eta * grad.sign()
             hard_negatives_list.append(perturbed_neighbor.detach())
         hard_negatives_final = torch.stack(hard_negatives_list, dim=1)
-        return nn.functional.normalize(hard_negatives_final, dim=-1).detach()
+        return F.normalize(hard_negatives_final, dim=-1).detach()
 
     def contrastive_loss(self, q, k, queue):
 
@@ -309,10 +302,10 @@ class SynCo(nn.Module):
         pred_2 = F.normalize(pred_2, dim=1)
 
         # compute key features: NxC
-        with torch.no_grad():  
+        with torch.no_grad():  # no gradient to keys
             self._momentum_update_key_encoder()  # update the key encoder
 
-            feat_1_ng = self.encoder_k(im_1)  # keys: NxC
+            feat_1_ng = self.encoder_k(im_1)
             proj_1_ng = self.projector_k(feat_1_ng)
             proj_1_ng = F.normalize(proj_1_ng, dim=1)
 
@@ -347,12 +340,12 @@ class MLP(nn.Module):
             linear_hidden.append(nn.ReLU(inplace=True))
         self.linear_hidden = nn.Sequential(*linear_hidden)
 
+        # output layer
         self.linear_out = nn.Linear(in_dim if num_layers == 1 else inner_dim, out_dim) if num_layers >= 1 else nn.Identity()
 
     def forward(self, x):
         x = self.linear_hidden(x)
         x = self.linear_out(x)
-
         return x
     
 

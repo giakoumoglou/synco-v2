@@ -17,7 +17,7 @@ python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=$MASTER_PORT \
     main_pretrain.py \
-    --cfg configs/moby/vit_small.yaml \
+    --cfg configs/vitamins/vit_small.yaml \
     --data-path $DATA_PATH \
     --batch-size 128 \
     --output $OUTPUT_DIR \
@@ -27,7 +27,7 @@ python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=$MASTER_PORT \
     main_linear.py \
-    --cfg configs/moby/vit_small.yaml \
+    --cfg configs/vitamins/vit_small.yaml \
     --data-path $DATA_PATH \
     --output $OUTPUT_DIR \
     --tag $TAG

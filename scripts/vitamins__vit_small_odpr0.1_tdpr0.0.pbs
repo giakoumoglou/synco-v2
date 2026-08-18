@@ -17,17 +17,18 @@ python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=$MASTER_PORT \
     main_pretrain.py \
-    --cfg configs/moby/vit_small.yaml \
+    --cfg configs/vitamins/vit_small.yaml \
     --data-path $DATA_PATH \
     --batch-size 128 \
     --output $OUTPUT_DIR \
-    --tag $TAG
+    --tag $TAG \
+    --opts MODEL.ONLINE_DROP_PATH_RATE 0.1 MODEL.TARGET_DROP_PATH_RATE 0.1
 
 python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --master_port=$MASTER_PORT \
     main_linear.py \
-    --cfg configs/moby/vit_small.yaml \
+    --cfg configs/vitamins/vit_small.yaml \
     --data-path $DATA_PATH \
     --output $OUTPUT_DIR \
     --tag $TAG

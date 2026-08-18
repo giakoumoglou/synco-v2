@@ -1,17 +1,18 @@
-## _SynCo_-v2: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives
+## _ViTAMINS_: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives
 
-<img width="1173" height="376" alt="image" src="https://github.com/user-attachments/assets/67e49f69-51e4-438b-a284-77e970dab956" />
+<img width="1173" height="376" alt="image" src="https://i.postimg.cc/xj6Dvq0j/teaser-vitamins.png" />
 
-This is a PyTorch implementation of the [SynCo-v2 paper](https://giakoumoglou.com/src/syncov2/syncov2-main.pdf), currently available at [giakoumoglou.com](giakoumoglou.com):
+This is a PyTorch implementation of the [ViTAMINS paper](https://giakoumoglou.com/src/vitamins/vitamins-main.pdf), accepted at **WACV 2027**:
 ```
-@misc{giakoumoglou2025syncov2,
-      title={{SynCo-v2: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives}}, 
-      author={Nikolaos Giakoumoglou and Andreas Floros and Kleanthis Marios Papadopoulos and Tania Stathaki},
-      year={2026}
+@inproceedings{giakoumoglou2027vitamins,
+      title={{ViTAMINS: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives}}, 
+      author={Nikos Giakoumoglou and Andreas Floros and Kleanthis-Marios Papadopoulos and Tania Stathaki},
+      booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+      year={2027}
 }
 ```
 
-It also contains the implementation of [BYOL](https://arxiv.org/abs/2006.07733) and [MoBY](https://arxiv.org/abs/2105.04553).
+It also contains the implementation of [BYOL](https://arxiv.org/abs/2006.07733), [MoBY](https://arxiv.org/abs/2105.04553) and [DINO](https://arxiv.org/abs/2104.14294).
 
 
 ## Preparation
@@ -45,8 +46,8 @@ The scripts expect the following dataset structure:
 To set up a compatible environment (CUDA 11.7/11.8) on [PBS](https://en.wikipedia.org/wiki/Portable_Batch_System), follow these steps:
 
 ```bash
-conda create -n syncov2 -c conda-forge cudatoolkit=11.8 python=3.10.11
-conda activate syncov2
+conda create -n vitamins -c conda-forge cudatoolkit=11.8 python=3.10.11
+conda activate vitamins
 conda install -c "nvidia/label/cuda-11.8.0" cuda-nvcc
 python3 -m pip install nvidia-cudnn-cu11==8.6.0.163
 
@@ -68,14 +69,24 @@ python -m torch.distributed.launch \
     --nproc_per_node=8 \
     --master_port=12345 \
     main_pretrain.py \
-    --cfg configs/synco_vit_base.yaml \
+    --cfg configs/vitamins/vit_base.yaml \
     --data-path [your imagenet-folder with train and val folders] \
     --batch-size 64 \
     --output [output folder] \
     --tag [tag folder]
 ```
 
-To use MoBY or BYOL instead, swap the config file accordingly. For different architectures (Swin-Tiny, Swin-Small, Swin-Base, ViT-Small, ViT-Base), select the corresponding config from [`./configs`](configs).
+Configs are grouped by method, one folder per method and one file per architecture:
+
+```
+configs/
+├── byol/       # swin_tiny, swin_small, swin_base, vit_small, vit_base
+├── moby/       # swin_tiny, swin_small, swin_base, vit_small, vit_base
+├── dino/       # swin_tiny, swin_small, swin_base, vit_small, vit_base
+└── vitamins/   # swin_tiny, swin_small, swin_base, vit_small, vit_base
+```
+
+To use BYOL, MoBY or DINO instead, swap the config file accordingly, e.g. `--cfg configs/dino/vit_base.yaml`.
 
 ## Linear Classification
 
@@ -85,8 +96,8 @@ With a pre-trained model, to train a supervised linear classifier on frozen feat
 python -m torch.distributed.launch \
     --nproc_per_node=8 \
     --master_port=12345 \
-    eval_linear.py \
-    --cfg configs/synco_vit_base.yaml \
+    main_linear.py \
+    --cfg configs/vitamins/vit_base.yaml \
     --data-path [your imagenet-folder with train and val folders] \
     --output [output folder] \
     --tag [tag folder]
@@ -105,7 +116,7 @@ Use the evaluation scripts from the official [DINO repository](https://github.co
 
 ### License
 
-This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
+This project is under the MIT license. See [LICENSE](LICENSE) for details.
 
 ### Acknowledgments
 

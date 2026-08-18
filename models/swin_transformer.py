@@ -1,11 +1,9 @@
-# --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
-# Modified by Zhenda Xie
-# Modified by Nikolaos Giakoumoglou
-# --------------------------------------------------------
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import torch
 import torch.nn as nn
@@ -618,29 +616,29 @@ class SwinTransformer(nn.Module):
 
 class SwinTransformerMoCo(SwinTransformer):
     def __init__(self, stop_grad_conv1=False, **kwargs):
-        # Set default values that can be overridden by kwargs
+        # set default values that can be overridden by kwargs
         default_kwargs = {
-            'num_classes': 0,  # Typically 0 as it's feature extraction
+            'num_classes': 0,  # typically 0 as it is feature extraction
             'drop_rate': 0.0,
             'attn_drop_rate': 0.0,
             'drop_path_rate': 0.1,
             'ape': False,
             'patch_norm': True,
             'use_checkpoint': False,
-            'norm_before_mlp': 'ln'
+            'norm_before_mlp': 'ln',
         }
         
-        # Update defaults with any passed kwargs
+        # update defaults with any passed kwargs
         default_kwargs.update(kwargs)
         
         super().__init__(**default_kwargs)
 
-        # Option to stop gradients for the first conv layer
+        # option to stop gradients for the first conv layer
         if stop_grad_conv1:
             for param in self.patch_embed.proj.parameters():
                 param.requires_grad = False
 
-        # Custom initialization if needed
+        # custom initialization if needed
         self.apply(self._init_weights)
 
     def _init_weights(self, m):

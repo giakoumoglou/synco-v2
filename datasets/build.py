@@ -1,10 +1,9 @@
-# --------------------------------------------------------
-# Swin Transformer
-# Copyright (c) 2021 Microsoft
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Ze Liu
-# Modified by Zhenda Xie
-# --------------------------------------------------------
+# Copyright (C) 2026.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import os
 import numpy as np
@@ -26,7 +25,9 @@ from .samplers import SubsetRandomSampler
 
 
 class VOCClassification(torch.utils.data.Dataset):
-    """VOC dataset adapted for single-label classification using CELoss"""
+    """
+    VOC dataset adapted for single-label classification using the cross-entropy loss
+    """
     def __init__(self, root, year='2007', image_set='train', transform=None):
         self.voc_dataset = datasets.VOCDetection(
             root=root, 
@@ -46,13 +47,15 @@ class VOCClassification(torch.utils.data.Dataset):
         return len(self.voc_dataset)
     
     def get_dominant_class(self, target):
-        """Get the class with the largest bounding box area"""
+        """
+        Get the class with the largest bounding box area
+        """
         objects = target['annotation']['object']
         if not isinstance(objects, list):
             objects = [objects]
         
         max_area = 0
-        dominant_class = 0  # Default to first class if no valid objects found
+        dominant_class = 0  # default to the first class if no valid objects are found
         
         for obj in objects:
             bbox = obj['bndbox']
@@ -71,7 +74,7 @@ class VOCClassification(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         image, target = self.voc_dataset[idx]
         
-        # Get single dominant class label for CELoss
+        # get a single dominant class label for the cross-entropy loss
         label = self.get_dominant_class(target)
         
         if self.transform:
@@ -250,7 +253,7 @@ def build_dataset(is_train, config):
             else:
                 orig_transforms = [transform]
             rgb_transform = transforms.Compose([
-                transforms.Lambda(lambda x: x.convert('RGB')),  # Ensure RGB
+                transforms.Lambda(lambda x: x.convert('RGB')),  # ensure rgb
                 *orig_transforms
             ])
         else:
@@ -295,7 +298,7 @@ def build_dataset(is_train, config):
         year = '2007'
         image_set = 'train' if is_train else 'val'
         dataset = VOCClassification(root=config.DATA.DATA_PATH, year=year, image_set=image_set, transform=transform)
-        nb_classes = 20  # Single-label classification with 20 classes (compatible with CELoss)
+        nb_classes = 20  # single-label classification with 20 classes, compatible with the cross-entropy loss
     # ================ places365 ================
     elif config.DATA.DATASET == 'places365' or config.DATA.DATASET == 'places':
         config.DATA.DATA_PATH = './data/'

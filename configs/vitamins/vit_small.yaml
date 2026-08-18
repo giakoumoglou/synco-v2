@@ -11,9 +11,9 @@ AUG:
   SSL_AUG: True
   SSL_AUG_TYPE: byol
 MODEL:
-  TYPE: synco
+  TYPE: vitamins
   ENCODER: vit_small
-  NAME: synco__vit_small__odpr02_tdpr0_cm099_ct02_queue4096_proj2_pred2
+  NAME: vitamins__vit_small__odpr02_tdpr0_cm099_ct02_queue4096_proj2_pred2
   ONLINE_DROP_PATH_RATE: 0.2
   TARGET_DROP_PATH_RATE: 0.0
   CONTRAST_MOMENTUM: 0.99
