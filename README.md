@@ -6,10 +6,14 @@
 
 This is a PyTorch implementation of the [ViTAMINS paper](https://arxiv.org/abs/TO.DO), accepted at **WACV 2027**:
 ```
-@inproceedings{giakoumoglou2026vitamins,
-      title={{ViTAMINS: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives}}, 
+@misc{giakoumoglou2026vitamins,
+      title={{ViTAMINS}: An Empirical Study of Training Self-Supervised Vision Transformers with Synthetic Hard Negatives}, 
       author={Nikos Giakoumoglou and Andreas Floros and Kleanthis-Marios Papadopoulos and Tania Stathaki},
-      year={2026}
+      year={2026},
+      eprint={2609.01041},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2609.01041}, 
 }
 ```
 
